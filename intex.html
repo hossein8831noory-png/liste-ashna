@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لیست بچه‌های گروه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#fbe4ec;
+    --lilac:#efe0f7;
+    --peach:#ffe9df;
+    --rose:#e88aa0;
+    --plum:#5b3a4c;
+    --plum-soft:#8a6478;
+    --gold:#d9a441;
+    --ok-green:#8fae8a;
+    --card:#fffaf9;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Vazirmatn', sans-serif;
+    color:var(--plum);
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,.55), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(239,224,247,.7), transparent 50%),
+      radial-gradient(circle at 50% 90%, rgba(255,233,223,.8), transparent 55%),
+      linear-gradient(160deg, var(--blush), var(--lilac) 55%, var(--peach));
+    background-attachment:fixed;
+    overflow-x:hidden;
+    position:relative;
+  }
+  .blob{
+    position:fixed; border-radius:50%; filter:blur(60px); opacity:.5; z-index:0; pointer-events:none;
+    animation:float 14s ease-in-out infinite;
+  }
+  .blob1{width:280px;height:280px;background:#f6b8cd;top:-60px;left:-60px;}
+  .blob2{width:340px;height:340px;background:#d7bdf0;bottom:-100px;right:-80px;animation-delay:2s;}
+  .blob3{width:200px;height:200px;background:#ffd0b0;bottom:20%;left:10%;animation-delay:4s;}
+  @keyframes float{
+    0%,100%{transform:translateY(0) translateX(0);}
+    50%{transform:translateY(-24px) translateX(14px);}
+  }
+  @media (prefers-reduced-motion: reduce){ .blob{animation:none;} }
+
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:18px 16px 60px;}
+
+  .designer-tag{
+    text-align:center;font-size:12px;letter-spacing:2px;color:var(--plum-soft);
+    opacity:.75;margin-bottom:6px;text-transform:uppercase;
+  }
+
+  header.hero{text-align:center;padding:18px 10px 26px;}
+  header.hero h1{
+    font-size:32px;margin:0 0 6px;font-weight:800;color:var(--plum);
+    letter-spacing:.5px;
+  }
+  header.hero h1 span{color:var(--rose);}
+  header.hero p{margin:0;color:var(--plum-soft);font-size:14.5px;line-height:1.8;}
+
+  .toolbar{
+    display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:20px 0 8px;
+  }
+  .btn{
+    border:none;cursor:pointer;padding:11px 22px;border-radius:999px;font-family:inherit;
+    font-size:14.5px;font-weight:600;transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;box-shadow:0 6px 18px rgba(216,116,140,.35);}
+  .btn-primary:hover{box-shadow:0 8px 22px rgba(216,116,140,.45);}
+  .btn-ghost{background:rgba(255,255,255,.6);color:var(--plum);border:1px solid rgba(139,100,120,.25);}
+  .btn-ghost:hover{background:rgba(255,255,255,.85);}
+
+  .status-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:14px 0 24px;font-size:13px;color:var(--plum-soft);}
+  .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:5px;vertical-align:middle;}
+
+  .section-title{
+    display:flex;align-items:center;gap:10px;margin:34px 0 14px;
+  }
+  .section-title h2{font-size:17px;margin:0;font-weight:700;color:var(--plum);white-space:nowrap;}
+  .section-title .line{flex:1;height:1px;background:linear-gradient(90deg,rgba(139,100,120,.35),transparent);}
+  .section-title .count{font-size:12.5px;color:var(--plum-soft);background:rgba(255,255,255,.6);padding:2px 10px;border-radius:999px;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+
+  .card{
+    background:var(--card);
+    border-radius:20px;
+    padding:16px 16px 14px;
+    box-shadow:0 8px 24px rgba(139,80,105,.10);
+    border:1px solid rgba(255,255,255,.7);
+    position:relative;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(139,80,105,.16);}
+  .card .name{font-size:16.5px;font-weight:700;margin:0 0 4px;color:var(--plum);}
+  .badge{
+    display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+    padding:3px 10px;border-radius:999px;margin-bottom:9px;
+  }
+  .badge.single{background:#fdeef1;color:var(--rose);}
+  .badge.relationship{background:#f1ece0;color:#a9843a;}
+  .badge.unknown{background:#eef0ea;color:#7a8a6e;}
+  .card .bio{font-size:13px;line-height:1.75;color:var(--plum-soft);min-height:20px;margin-bottom:10px;white-space:pre-wrap;}
+  .card .bio.empty{font-style:italic;opacity:.6;}
+  .rubika-link{
+    display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;
+    color:#fff;background:linear-gradient(135deg,var(--rose),#c9647e);
+    padding:7px 12px;border-radius:12px;text-decoration:none;
+  }
+  .rubika-link:hover{filter:brightness(1.06);}
+  .private-tag{font-size:12px;color:var(--plum-soft);opacity:.7;}
+
+  .empty-state{text-align:center;color:var(--plum-soft);font-size:14px;padding:30px 0;}
+
+  /* Modal */
+  .overlay{
+    position:fixed;inset:0;background:rgba(74,46,58,.35);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;
+  }
+  .modal{
+    background:#fffdfc;border-radius:22px;max-width:420px;width:100%;
+    padding:24px 22px;box-shadow:0 20px 50px rgba(90,50,65,.25);
+    max-height:88vh;overflow-y:auto;
+  }
+  .modal h3{margin:0 0 4px;font-size:18px;color:var(--plum);}
+  .modal .sub{font-size:13px;color:var(--plum-soft);margin:0 0 16px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--plum);margin-bottom:6px;}
+  select, textarea, input[type=text]{
+    width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(139,100,120,.25);
+    font-family:inherit;font-size:14px;background:#fff;color:var(--plum);resize:vertical;
+  }
+  select:focus, textarea:focus, input:focus{outline:2px solid var(--rose);outline-offset:1px;}
+  .radio-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .radio-pill{
+    flex:1;min-width:90px;text-align:center;padding:9px 8px;border-radius:12px;
+    border:1.5px solid rgba(139,100,120,.25);cursor:pointer;font-size:13px;font-weight:600;color:var(--plum-soft);
+    transition:all .15s ease;
+  }
+  .radio-pill input{display:none;}
+  .radio-pill.active-single{border-color:var(--rose);background:#fdeef1;color:var(--rose);}
+  .radio-pill.active-relationship{border-color:var(--gold);background:#f7efdd;color:#a9843a;}
+  .radio-pill.active-unknown{border-color:#8fae8a;background:#eef0ea;color:#5f7256;}
+  .modal-actions{display:flex;gap:10px;margin-top:18px;}
+  .modal-actions .btn{flex:1;}
+  .close-x{position:absolute;top:14px;left:14px;background:none;border:none;font-size:18px;color:var(--plum-soft);cursor:pointer;}
+  .modal{position:relative;}
+  .note{font-size:12px;color:var(--plum-soft);margin-top:10px;line-height:1.7;}
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+    background:var(--plum);color:#fff;padding:10px 20px;border-radius:999px;font-size:13.5px;
+    box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:60;opacity:0;transition:opacity .25s ease;
+  }
+  .toast.show{opacity:1;}
+  footer.foot{text-align:center;margin-top:36px;font-size:12px;color:var(--plum-soft);opacity:.7;}
+</style>
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div class="wrap">
+  <div class="designer-tag">طراح: OFF</div>
+  <header class="hero">
+    <h1>وضعیت <span>قلب</span> بچه‌های گروه 💌</h1>
+    <p>هر کی سینگله، آیدی روبیکاش پایین کارتشه — هر کی تو رابطه‌ست، فقط باهاش گرم بگیر 😌<br>وضعیتت عوض شده؟ برو پایین و آپدیتش کن.</p>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn btn-primary" id="openIdentify">ورود / آپدیت وضعیت من</button>
+    <button class="btn btn-ghost" id="refreshBtn">🔄 بروزرسانی لیست</button>
+  </div>
+
+  <div class="status-legend">
+    <span><span class="legend-dot" style="background:var(--rose)"></span>سینگل</span>
+    <span><span class="legend-dot" style="background:var(--gold)"></span>تو رابطه</span>
+    <span><span class="legend-dot" style="background:#8fae8a"></span>وضعیت نامعلوم</span>
+  </div>
+
+  <div id="listRoot"></div>
+
+  <footer class="foot">فقط برای اعضای گروه — لطفاً لینک رو جای دیگه پخش نکن 🤍</footer>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="modalRoot"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwckddfB54509nta9468xf0SnG7ZMqhlP2WUEaWZFFPfIPaiNqRSaEyL5PakLUaNVU/exec';
+const REFRESH_MS = 30000; // polls frequently so the list feels live
+
+const SEED = [
+  {id:0,  name:"یسنا",              status:"single",       rubika:"@Denizzz__900",  bio:""},
+  {id:1,  name:"نیلماه",            status:"single",       rubika:"@Nilmah_nilmah", bio:""},
+  {id:2,  name:"امین",              status:"relationship", rubika:"@aminbul110",    bio:""},
+  {id:3,  name:"نگار",              status:"single",       rubika:"@Negarnazar90",  bio:""},
+  {id:4,  name:"ابول",              status:"relationship", rubika:"@Aboltex",       bio:""},
+  {id:5,  name:"امیر",              status:"relationship", rubika:"@Amir__Jafari3", bio:""},
+  {id:6,  name:"یاشار",             status:"single",       rubika:"@yaskaaas",      bio:""},
+  {id:7,  name:"ریحانه",            status:"relationship", rubika:"@reyhaneh3_96",  bio:""},
+  {id:8,  name:"فاطمه",             status:"relationship", rubika:"@R_123456778",   bio:""},
+  {id:9,  name:"هستی",              status:"single",       rubika:"@Stbir23",       bio:""},
+  {id:10, name:"پرنیا",             status:"single",       rubika:"@Snowfwakes",    bio:""},
+  {id:11, name:"مانی",              status:"single",       rubika:"@Ma_NiY8",       bio:""},
+  {id:12, name:"علی",               status:"single",       rubika:"@aliahaker",     bio:""},
+  {id:13, name:"اشکان",             status:"single",       rubika:"@ashkan__timoory", bio:""},
+  {id:14, name:"سارینا",            status:"relationship", rubika:"@mahtab__189",   bio:""},
+  {id:15, name:"حسین",              status:"single",       rubika:"@H_Alizadeh_N",  bio:""},
+  {id:16, name:"فاطمه",             status:"single",       rubika:"@Denizzz__90",   bio:""},
+  {id:17, name:"هانا",              status:"unknown",      rubika:"@Hanna79n",      bio:""},
+  {id:18, name:"رونیکا",            status:"unknown",      rubika:"@Ronika9577",    bio:""},
+];
+
+let members = [];
+
+function statusLabel(s){
+  return s==='single' ? 'سینگل' : s==='relationship' ? 'تو رابطه' : 'وضعیت نامعلوم';
+}
+
+async function loadMembers(){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, { method: 'GET' });
+    const data = await res.json();
+    members = data.map(raw => {
+      // the sheet's header row may have stray spaces/casing; normalize keys
+      // (e.g. "name " -> "name") before reading each field
+      const norm = {};
+      Object.keys(raw).forEach(k => { norm[k.trim().toLowerCase()] = raw[k]; });
+      return {
+        id: Number(norm.id),
+        name: String(norm.name || '').trim(),
+        status: String(norm.status || 'unknown').trim(),
+        rubika: String(norm.rubika || '').trim(),
+        bio: String(norm.bio || '')
+      };
+    });
+  }catch(e){
+    console.error('load failed', e);
+    if(!members.length) members = SEED;
+    showToast('اتصال به لیست برقرار نشد، لیست ذخیره‌شده‌ی قبلی نشون داده می‌شه');
+  }
+}
+
+async function saveMember(m){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids a CORS preflight Apps Script can't handle
+      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio })
+    });
+    const data = await res.json();
+    return !!(data && data.ok);
+  }catch(e){
+    console.error('save failed', e);
+    return false;
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+function rubikaHref(handle){
+  const clean = handle.replace(/^@/, '').trim();
+  return 'https://rubika.ir/' + encodeURIComponent(clean);
+}
+
+function renderCard(m){
+  const bioText = m.bio && m.bio.trim() ? m.bio.trim() : 'هنوز چیزی درباره خودش ننوشته';
+  const bioClass = m.bio && m.bio.trim() ? 'bio' : 'bio empty';
+  const rubikaBlock = m.status === 'single'
+    ? `<a class="rubika-link" href="${rubikaHref(m.rubika)}" target="_blank" rel="noopener">💬 ${m.rubika}</a>`
+    : `<span class="private-tag">آیدی نمایش داده نمی‌شه</span>`;
+  return `
+    <div class="card">
+      <p class="name">${escapeHtml(m.name)}</p>
+      <span class="badge ${m.status}">${statusLabel(m.status)}</span>
+      <p class="${bioClass}">${escapeHtml(bioText)}</p>
+      ${rubikaBlock}
+    </div>`;
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function renderList(){
+  const root = document.getElementById('listRoot');
+  if(!members.length){ root.innerHTML = '<div class="empty-state">لیست خالیه</div>'; return; }
+
+  const groups = [
+    {key:'single', title:'سینگل‌ها'},
+    {key:'relationship', title:'تو رابطه‌ان'},
+    {key:'unknown', title:'وضعیت نامعلوم'},
+  ];
+
+  let html = '';
+  groups.forEach(g=>{
+    const items = members.filter(m=>m.status===g.key);
+    if(!items.length) return;
+    html += `
+      <div class="section-title">
+        <h2>${g.title}</h2>
+        <div class="line"></div>
+        <span class="count">${items.length} نفر</span>
+      </div>
+      <div class="grid">${items.map(renderCard).join('')}</div>`;
+  });
+  root.innerHTML = html;
+}
+
+function openIdentifyModal(){
+  const root = document.getElementById('modalRoot');
+  const options = members.map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+  root.innerHTML = `
+    <div class="overlay" id="overlay">
+      <div class="modal">
+        <button class="close-x" id="closeModal">✕</button>
+        <h3>خودت رو انتخاب کن</h3>
+        <p class="sub">اول بگو کدوم یکی از لیست تویی، بعد وضعیتت رو آپدیت کن</p>
+        <div class="field">
+          <label>اسم من:</label>
+          <select id="whoSelect">
+            <option value="">— انتخاب کن —</option>
+            ${options}
+          </select>
+        </div>
+        <div id="editArea"></div>
+      </div>
+    </div>`;
+  document.getElementById('closeModal').onclick = closeModal;
+  document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') closeModal(); };
+  document.getElementById('whoSelect').onchange = (e)=>{
+    const id = e.target.value;
+    renderEditArea(id === '' ? null : parseInt(id));
+  };
+}
+
+function renderEditArea(id){
+  const area = document.getElementById('editArea');
+  if(id === null){ area.innerHTML = ''; return; }
+  const m = members.find(x=>x.id===id);
+  area.innerHTML = `
+    <div class="field">
+      <label>وضعیت فعلیم:</label>
+      <div class="radio-row" id="statusRow">
+        <label class="radio-pill ${m.status==='single'?'active-single':''}" data-val="single">
+          <input type="radio" name="st" value="single" ${m.status==='single'?'checked':''}>سینگل
+        </label>
+        <label class="radio-pill ${m.status==='relationship'?'active-relationship':''}" data-val="relationship">
+          <input type="radio" name="st" value="relationship" ${m.status==='relationship'?'checked':''}>تو رابطه
+        </label>
+        <label class="radio-pill ${m.status==='unknown'?'active-unknown':''}" data-val="unknown">
+          <input type="radio" name="st" value="unknown" ${m.status==='unknown'?'checked':''}>نامعلوم
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <label>آیدی روبیکام:</label>
+      <input type="text" id="rubikaInput" value="${escapeHtml(m.rubika)}">
+    </div>
+    <div class="field">
+      <label>یه کم درباره خودم (اخلاق، ویژگی‌ها، علایق و ...):</label>
+      <textarea id="bioInput" rows="4" placeholder="مثلاً: آرومم، شوخ‌طبعم، عاشق فیلمم، دنبال یکی که...">${escapeHtml(m.bio||'')}</textarea>
+    </div>
+    <p class="note">آیدی روبیکات فقط وقتی زیر کارتت نشون داده می‌شه که وضعیتت «سینگل» باشه.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancelEdit">انصراف</button>
+      <button class="btn btn-primary" id="saveEdit">ذخیره</button>
+    </div>`;
+
+  area.querySelectorAll('.radio-pill').forEach(pill=>{
+    pill.addEventListener('click', ()=>{
+      area.querySelectorAll('.radio-pill').forEach(p=>{
+        p.classList.remove('active-single','active-relationship','active-unknown');
+      });
+      pill.classList.add('active-' + pill.dataset.val);
+    });
+  });
+
+  document.getElementById('cancelEdit').onclick = closeModal;
+  document.getElementById('saveEdit').onclick = async ()=>{
+    const status = area.querySelector('input[name=st]:checked').value;
+    const rubika = document.getElementById('rubikaInput').value.trim() || m.rubika;
+    const bio = document.getElementById('bioInput').value.trim();
+    // look up the live object by id (not the closured "m") in case the
+    // background auto-refresh replaced the members array while this was open
+    const target = members.find(x=>x.id===id) || m;
+    const prev = { status: target.status, rubika: target.rubika, bio: target.bio };
+    target.status = status; target.rubika = rubika; target.bio = bio;
+    const saveBtn = document.getElementById('saveEdit');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'در حال ذخیره...';
+    const ok = await saveMember(target);
+    if(ok){
+      renderList();
+      closeModal();
+      showToast('وضعیتت آپدیت شد ✅');
+      await loadMembers();
+      renderList();
+    }else{
+      target.status = prev.status; target.rubika = prev.rubika; target.bio = prev.bio;
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'ذخیره';
+      showToast('ذخیره نشد، اتصالت رو چک کن و دوباره بزن');
+    }
+  };
+}
+
+function closeModal(){
+  document.getElementById('modalRoot').innerHTML = '';
+}
+
+document.getElementById('openIdentify').onclick = openIdentifyModal;
+document.getElementById('refreshBtn').onclick = async ()=>{
+  await loadMembers();
+  renderList();
+  showToast('لیست بروز شد');
+};
+
+(async function init(){
+  await loadMembers();
+  renderList();
+  setInterval(async ()=>{
+    await loadMembers();
+    renderList();
+  }, REFRESH_MS);
+})();
+</script>
+</body>
+</html>
