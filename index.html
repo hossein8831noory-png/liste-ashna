@@ -295,18 +295,18 @@ async function loadMembers(){
   }
 }
 
-async function saveMember(m){
+async function saveMember(m, password){
   try{
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids a CORS preflight Apps Script can't handle
-      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio })
+      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio, password: password })
     });
     const data = await res.json();
-    return !!(data && data.ok);
+    return { ok: !!(data && data.ok), error: data && data.error };
   }catch(e){
     console.error('save failed', e);
-    return false;
+    return { ok: false };
   }
 }
 
@@ -422,6 +422,10 @@ function renderEditArea(id){
       <label>یه کم درباره خودم (اخلاق، ویژگی‌ها، علایق و ...):</label>
       <textarea id="bioInput" rows="4" placeholder="مثلاً: آرومم، شوخ‌طبعم، عاشق فیلمم، دنبال یکی که...">${escapeHtml(m.bio||'')}</textarea>
     </div>
+    <div class="field">
+      <label>رمز مخصوص خودت:</label>
+      <input type="password" id="passwordInput" placeholder="رمزی که تو پی‌وی بهت داده شد">
+    </div>
     <p class="note">آیدی روبیکات فقط وقتی زیر کارتت نشون داده می‌شه که وضعیتت «سینگل» باشه.</p>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="cancelEdit">انصراف</button>
@@ -442,6 +446,8 @@ function renderEditArea(id){
     const status = area.querySelector('input[name=st]:checked').value;
     const rubika = document.getElementById('rubikaInput').value.trim() || m.rubika;
     const bio = document.getElementById('bioInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    if(!password){ showToast('رمزتو وارد کن'); return; }
     // look up the live object by id (not the closured "m") in case the
     // background auto-refresh replaced the members array while this was open
     const target = members.find(x=>x.id===id) || m;
@@ -450,8 +456,8 @@ function renderEditArea(id){
     const saveBtn = document.getElementById('saveEdit');
     saveBtn.disabled = true;
     saveBtn.textContent = 'در حال ذخیره...';
-    const ok = await saveMember(target);
-    if(ok){
+    const result = await saveMember(target, password);
+    if(result.ok){
       renderList();
       closeModal();
       showToast('وضعیتت آپدیت شد ✅');
@@ -461,7 +467,7 @@ function renderEditArea(id){
       target.status = prev.status; target.rubika = prev.rubika; target.bio = prev.bio;
       saveBtn.disabled = false;
       saveBtn.textContent = 'ذخیره';
-      showToast('ذخیره نشد، اتصالت رو چک کن و دوباره بزن');
+      showToast(result.error === 'bad_password' ? 'رمز اشتباهه ❌' : 'ذخیره نشد، اتصالت رو چک کن و دوباره بزن');
     }
   };
 }
@@ -523,6 +529,21 @@ async function sendGameAction(action, payload){
   }
 }
 
+async function verifyPassword(id, password){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ scope: 'auth', id, password })
+    });
+    const data = await res.json();
+    return !!(data && data.ok);
+  }catch(e){
+    console.error('verify failed', e);
+    return false;
+  }
+}
+
 let gameState = null;
 
 async function pollGame(){
@@ -546,16 +567,26 @@ function whoAmIPicker(onPicked){
             ${options}
           </select>
         </div>
+        <div class="field">
+          <label>رمز مخصوص خودت:</label>
+          <input type="password" id="whoAmIPassword" placeholder="رمزی که تو پی‌وی بهت داده شد">
+        </div>
         <button class="btn btn-primary" style="width:100%;margin-top:8px;" id="whoConfirm">تایید</button>
       </div>
     </div>`;
   document.getElementById('whoClose').onclick = ()=> root.innerHTML = '';
   document.getElementById('whoOverlay').onclick = (e)=>{ if(e.target.id==='whoOverlay') root.innerHTML=''; };
-  document.getElementById('whoConfirm').onclick = ()=>{
+  document.getElementById('whoConfirm').onclick = async ()=>{
     const id = parseInt(document.getElementById('whoAmISelect').value);
+    const password = document.getElementById('whoAmIPassword').value;
     const m = members.find(x=>x.id===id);
-    if(!m) return;
-    me = { id: m.id, name: m.name };
+    if(!m || !password){ showToast('اسم و رمزتو وارد کن'); return; }
+    const btn = document.getElementById('whoConfirm');
+    btn.disabled = true; btn.textContent = 'در حال بررسی...';
+    const verified = await verifyPassword(id, password);
+    btn.disabled = false; btn.textContent = 'تایید';
+    if(!verified){ showToast('رمز اشتباهه ❌'); return; }
+    me = { id: m.id, name: m.name, password: password };
     root.innerHTML = '';
     onPicked && onPicked();
   };
@@ -587,7 +618,7 @@ async function renderGame(){
       </div>`;
     if(isHost){
       document.getElementById('createRoomBtn').onclick = async ()=>{
-        await sendGameAction('create', { host: me.name });
+        await sendGameAction('create', { id: me.id, host: me.name, password: me.password });
         await pollGame();
         showToast('روم باز شد، حالا تو گروه اعلامش کن 🎉');
       };
@@ -610,7 +641,7 @@ async function renderGame(){
       </div>`;
     if(!iJoined){
       document.getElementById('joinBtn').onclick = async ()=>{
-        await sendGameAction('join', { id: me.id, name: me.name });
+        await sendGameAction('join', { id: me.id, name: me.name, password: me.password });
         await pollGame();
       };
     }
