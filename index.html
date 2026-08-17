@@ -157,6 +157,44 @@
   }
   .toast.show{opacity:1;}
   footer.foot{text-align:center;margin-top:36px;font-size:12px;color:var(--plum-soft);opacity:.7;}
+
+  /* Tabs */
+  .tabbar{display:flex;gap:8px;justify-content:center;margin:22px 0 4px;}
+  .tab-btn{
+    border:none;background:rgba(255,255,255,.55);color:var(--plum-soft);
+    padding:9px 18px;border-radius:999px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  }
+  .tab-btn.active{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;}
+
+  /* Game */
+  .game-card{
+    background:var(--card);border-radius:22px;padding:22px 18px;margin-top:18px;
+    box-shadow:0 8px 24px rgba(139,80,105,.10);text-align:center;
+  }
+  .game-card h3{margin:0 0 10px;font-size:18px;color:var(--plum);}
+  .game-card p.sub{font-size:13.5px;color:var(--plum-soft);margin:0 0 16px;line-height:1.8;}
+  .player-chip{
+    display:inline-flex;align-items:center;gap:6px;background:#fdeef1;color:var(--rose);
+    padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;margin:4px;
+  }
+  .player-chip.turn{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;}
+  .bottle-wrap{
+    width:120px;height:120px;margin:20px auto;position:relative;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .bottle-emoji{
+    font-size:64px;display:inline-block;
+    transition:transform 2.2s cubic-bezier(.17,.67,.29,1.01);
+    transform:rotate(0deg);
+    cursor:pointer;
+  }
+  .bottle-emoji.disabled{cursor:default;opacity:.55;}
+  .spin-result{
+    margin-top:14px;font-size:16px;font-weight:700;color:var(--plum);
+    background:#f7efdd;padding:12px 16px;border-radius:14px;line-height:1.9;
+  }
+  .name-select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(139,100,120,.25);font-family:inherit;font-size:14px;background:#fff;color:var(--plum);}
+
 </style>
 </head>
 <body>
@@ -176,6 +214,12 @@
     <button class="btn btn-ghost" id="refreshBtn">🔄 بروزرسانی لیست</button>
   </div>
 
+  <div class="tabbar">
+    <button class="tab-btn active" id="tabList">💌 لیست</button>
+    <button class="tab-btn" id="tabGame">🍾 جرأت یا حقیقت</button>
+  </div>
+
+  <div id="listView">
   <div class="status-legend">
     <span><span class="legend-dot" style="background:var(--rose)"></span>سینگل</span>
     <span><span class="legend-dot" style="background:var(--gold)"></span>تو رابطه</span>
@@ -183,12 +227,17 @@
   </div>
 
   <div id="listRoot"></div>
+  </div>
+
+  <div id="gameView" style="display:none;"></div>
 
   <footer class="foot">فقط برای اعضای گروه — لطفاً لینک رو جای دیگه پخش نکن 🤍</footer>
 </div>
 
 <div id="toast" class="toast"></div>
 <div id="modalRoot"></div>
+<div id="whoAmIRoot"></div>
+
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwckddfB54509nta9468xf0SnG7ZMqhlP2WUEaWZFFPfIPaiNqRSaEyL5PakLUaNVU/exec';
@@ -226,13 +275,19 @@ async function loadMembers(){
   try{
     const res = await fetch(APPS_SCRIPT_URL, { method: 'GET' });
     const data = await res.json();
-    members = data.map(m => ({
-      id: Number(m.id),
-      name: String(m.name || '').trim(),
-      status: String(m.status || 'unknown').trim(),
-      rubika: String(m.rubika || '').trim(),
-      bio: String(m.bio || '')
-    }));
+    members = data.map(raw => {
+      // the sheet's header row may have stray spaces/casing; normalize keys
+      // (e.g. "name " -> "name") before reading each field
+      const norm = {};
+      Object.keys(raw).forEach(k => { norm[k.trim().toLowerCase()] = raw[k]; });
+      return {
+        id: Number(norm.id),
+        name: String(norm.name || '').trim(),
+        status: String(norm.status || 'unknown').trim(),
+        rubika: String(norm.rubika || '').trim(),
+        bio: String(norm.bio || '')
+      };
+    });
   }catch(e){
     console.error('load failed', e);
     if(!members.length) members = SEED;
@@ -421,6 +476,194 @@ document.getElementById('refreshBtn').onclick = async ()=>{
   renderList();
   showToast('لیست بروز شد');
 };
+
+/* ===================== Tabs ===================== */
+let me = null; // { id, name } — who the current browser session is
+let gamePollTimer = null;
+
+document.getElementById('tabList').onclick = ()=> switchTab('list');
+document.getElementById('tabGame').onclick = ()=> switchTab('game');
+
+function switchTab(tab){
+  const isList = tab === 'list';
+  document.getElementById('listView').style.display = isList ? '' : 'none';
+  document.getElementById('gameView').style.display = isList ? 'none' : '';
+  document.getElementById('tabList').classList.toggle('active', isList);
+  document.getElementById('tabGame').classList.toggle('active', !isList);
+  if(isList){
+    if(gamePollTimer){ clearInterval(gamePollTimer); gamePollTimer = null; }
+  }else{
+    renderGame();
+    if(!gamePollTimer) gamePollTimer = setInterval(pollGame, 4000);
+  }
+}
+
+/* ===================== Game: data layer ===================== */
+async function fetchGameState(){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL + '?type=game');
+    return await res.json();
+  }catch(e){
+    console.error('game fetch failed', e);
+    return null;
+  }
+}
+
+async function sendGameAction(action, payload){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ scope: 'game', action }, payload || {}))
+    });
+    return await res.json();
+  }catch(e){
+    console.error('game action failed', e);
+    return null;
+  }
+}
+
+let gameState = null;
+
+async function pollGame(){
+  const state = await fetchGameState();
+  if(state) { gameState = state; renderGame(); }
+}
+
+/* ===================== Game: UI ===================== */
+function whoAmIPicker(onPicked){
+  const root = document.getElementById('whoAmIRoot');
+  const options = members.map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+  root.innerHTML = `
+    <div class="overlay" id="whoOverlay">
+      <div class="modal">
+        <button class="close-x" id="whoClose">✕</button>
+        <h3>اول بگو تو کدومی</h3>
+        <p class="sub">این فقط برای شناسایی توئه تو بازی</p>
+        <div class="field">
+          <select id="whoAmISelect" class="name-select">
+            <option value="">— انتخاب کن —</option>
+            ${options}
+          </select>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:8px;" id="whoConfirm">تایید</button>
+      </div>
+    </div>`;
+  document.getElementById('whoClose').onclick = ()=> root.innerHTML = '';
+  document.getElementById('whoOverlay').onclick = (e)=>{ if(e.target.id==='whoOverlay') root.innerHTML=''; };
+  document.getElementById('whoConfirm').onclick = ()=>{
+    const id = parseInt(document.getElementById('whoAmISelect').value);
+    const m = members.find(x=>x.id===id);
+    if(!m) return;
+    me = { id: m.id, name: m.name };
+    root.innerHTML = '';
+    onPicked && onPicked();
+  };
+}
+
+async function renderGame(){
+  const root = document.getElementById('gameView');
+  if(!me){
+    root.innerHTML = `
+      <div class="game-card">
+        <h3>🍾 جرأت یا حقیقت</h3>
+        <p class="sub">اول باید بگی تو کدوم عضو گروهی</p>
+        <button class="btn btn-primary" id="pickMeBtn">من رو انتخاب کن</button>
+      </div>`;
+    document.getElementById('pickMeBtn').onclick = ()=> whoAmIPicker(renderGame);
+    return;
+  }
+
+  if(!gameState) gameState = await fetchGameState();
+  const s = gameState || { status: 'closed', players: [] };
+  const isHost = me.name === 'حسین';
+
+  if(s.status === 'closed'){
+    root.innerHTML = `
+      <div class="game-card">
+        <h3>🍾 جرأت یا حقیقت</h3>
+        <p class="sub">${isHost ? 'الان می‌تونی یه روم جدید باز کنی و تو گروه اعلامش کنی.' : 'الان بازی فعالی نیست. صبر کن حسین یه روم باز کنه و تو گروه اعلام کنه.'}</p>
+        ${isHost ? '<button class="btn btn-primary" id="createRoomBtn">شروع روم جدید</button>' : ''}
+      </div>`;
+    if(isHost){
+      document.getElementById('createRoomBtn').onclick = async ()=>{
+        await sendGameAction('create', { host: me.name });
+        await pollGame();
+        showToast('روم باز شد، حالا تو گروه اعلامش کن 🎉');
+      };
+    }
+    return;
+  }
+
+  if(s.status === 'waiting'){
+    const players = s.players || [];
+    const iJoined = players.some(p=>p.id===me.id);
+    root.innerHTML = `
+      <div class="game-card">
+        <h3>🍾 منتظر بازیکن‌ها...</h3>
+        <p class="sub">حداقل ۴ نفر باید آماده باشن تا بازی شروع بشه</p>
+        <div>${players.length ? players.map(p=>`<span class="player-chip">${escapeHtml(p.name)}</span>`).join('') : '<span class="sub">هنوز کسی نپیوسته</span>'}</div>
+        <p class="sub" style="margin-top:10px;">${players.length} نفر آماده‌ان</p>
+        ${!iJoined ? '<button class="btn btn-primary" id="joinBtn">ملحق شو + آماده‌ام ✅</button>' : '<p class="sub">✅ تو لیست آماده‌هایی</p>'}
+        ${isHost && players.length >= 4 ? '<button class="btn btn-primary" id="startBtn" style="margin-top:10px;">شروع بازی 🍾</button>' : ''}
+        ${isHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:10px;">بستن روم</button>' : ''}
+      </div>`;
+    if(!iJoined){
+      document.getElementById('joinBtn').onclick = async ()=>{
+        await sendGameAction('join', { id: me.id, name: me.name });
+        await pollGame();
+      };
+    }
+    if(isHost && players.length >= 4){
+      document.getElementById('startBtn').onclick = async ()=>{
+        await sendGameAction('start', {});
+        await pollGame();
+      };
+    }
+    if(isHost){
+      document.getElementById('closeRoomBtn').onclick = async ()=>{
+        await sendGameAction('close', {});
+        await pollGame();
+      };
+    }
+    return;
+  }
+
+  if(s.status === 'playing'){
+    const order = s.order || [];
+    const currentPlayer = order[s.currentIndex] || null;
+    const myTurn = currentPlayer && currentPlayer.id === me.id;
+    const result = s.spinResult;
+    root.innerHTML = `
+      <div class="game-card">
+        <h3>🍾 بازی شروع شده</h3>
+        <div>${order.map(p=>`<span class="player-chip ${currentPlayer && p.id===currentPlayer.id ? 'turn':''}">${escapeHtml(p.name)}</span>`).join('')}</div>
+        <p class="sub" style="margin-top:12px;">${myTurn ? '🌟 نوبت توئه! بزن رو بطری تا بچرخه' : `نوبت ${currentPlayer ? escapeHtml(currentPlayer.name) : '...'}`}</p>
+        <div class="bottle-wrap">
+          <span class="bottle-emoji ${myTurn ? '' : 'disabled'}" id="bottleEl">🍾</span>
+        </div>
+        ${result ? `<div class="spin-result">بطری بین <b>${escapeHtml(result.p1)}</b> و <b>${escapeHtml(result.p2)}</b> ایستاد!</div>` : ''}
+        ${isHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:16px;">پایان بازی</button>' : ''}
+      </div>`;
+    if(myTurn){
+      document.getElementById('bottleEl').onclick = async function(){
+        const el = this;
+        el.classList.add('disabled');
+        const spins = 5 + Math.floor(Math.random()*3);
+        el.style.transform = `rotate(${spins*360 + Math.floor(Math.random()*360)}deg)`;
+        await sendGameAction('spin', { id: me.id });
+        setTimeout(pollGame, 2300);
+      };
+    }
+    if(isHost){
+      document.getElementById('closeRoomBtn').onclick = async ()=>{
+        await sendGameAction('close', {});
+        await pollGame();
+      };
+    }
+    return;
+  }
+}
 
 (async function init(){
   await loadMembers();
