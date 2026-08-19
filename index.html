@@ -295,12 +295,12 @@ async function loadMembers(){
   }
 }
 
-async function saveMember(m, password){
+async function saveMember(m, password, newPassword){
   try{
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids a CORS preflight Apps Script can't handle
-      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio, password: password })
+      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio, password: password, newPassword: newPassword || undefined })
     });
     const data = await res.json();
     return { ok: !!(data && data.ok), error: data && data.error };
@@ -423,14 +423,28 @@ function renderEditArea(id){
       <textarea id="bioInput" rows="4" placeholder="مثلاً: آرومم، شوخ‌طبعم، عاشق فیلمم، دنبال یکی که...">${escapeHtml(m.bio||'')}</textarea>
     </div>
     <div class="field">
-      <label>رمز مخصوص خودت:</label>
+      <label>رمز فعلیت:</label>
       <input type="password" id="passwordInput" placeholder="رمزی که تو پی‌وی بهت داده شد">
+    </div>
+    <div class="field">
+      <button type="button" class="btn btn-ghost" id="togglePwChange" style="width:100%;">🔒 می‌خوام رمزمو به دلخواه خودم عوض کنم</button>
+      <div id="pwChangeArea" style="display:none;margin-top:10px;">
+        <label>رمز جدید:</label>
+        <input type="password" id="newPasswordInput" placeholder="حداقل ۴ کاراکتر">
+        <label style="margin-top:8px;display:block;">تکرار رمز جدید:</label>
+        <input type="password" id="newPasswordConfirm" placeholder="دوباره بنویسش">
+      </div>
     </div>
     <p class="note">آیدی روبیکات فقط وقتی زیر کارتت نشون داده می‌شه که وضعیتت «سینگل» باشه.</p>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="cancelEdit">انصراف</button>
       <button class="btn btn-primary" id="saveEdit">ذخیره</button>
     </div>`;
+
+  document.getElementById('togglePwChange').onclick = ()=>{
+    const pwArea = document.getElementById('pwChangeArea');
+    pwArea.style.display = pwArea.style.display === 'none' ? '' : 'none';
+  };
 
   area.querySelectorAll('.radio-pill').forEach(pill=>{
     pill.addEventListener('click', ()=>{
@@ -447,7 +461,15 @@ function renderEditArea(id){
     const rubika = document.getElementById('rubikaInput').value.trim() || m.rubika;
     const bio = document.getElementById('bioInput').value.trim();
     const password = document.getElementById('passwordInput').value;
-    if(!password){ showToast('رمزتو وارد کن'); return; }
+    if(!password){ showToast('رمز فعلیتو وارد کن'); return; }
+    let newPassword = null;
+    if(document.getElementById('pwChangeArea').style.display !== 'none'){
+      const np = document.getElementById('newPasswordInput').value;
+      const npc = document.getElementById('newPasswordConfirm').value;
+      if(np.length < 4){ showToast('رمز جدید باید حداقل ۴ کاراکتر باشه'); return; }
+      if(np !== npc){ showToast('تکرار رمز جدید درست نیست'); return; }
+      newPassword = np;
+    }
     // look up the live object by id (not the closured "m") in case the
     // background auto-refresh replaced the members array while this was open
     const target = members.find(x=>x.id===id) || m;
@@ -456,11 +478,11 @@ function renderEditArea(id){
     const saveBtn = document.getElementById('saveEdit');
     saveBtn.disabled = true;
     saveBtn.textContent = 'در حال ذخیره...';
-    const result = await saveMember(target, password);
+    const result = await saveMember(target, password, newPassword);
     if(result.ok){
       renderList();
       closeModal();
-      showToast('وضعیتت آپدیت شد ✅');
+      showToast(newPassword ? 'ذخیره شد و رمزت عوض شد ✅' : 'وضعیتت آپدیت شد ✅');
       await loadMembers();
       renderList();
     }else{
@@ -529,12 +551,12 @@ async function sendGameAction(action, payload){
   }
 }
 
-async function verifyPassword(id, password){
+async function verifyPassword(id, password, newPassword){
   try{
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ scope: 'auth', id, password })
+      body: JSON.stringify({ scope: 'auth', id, password, newPassword: newPassword || undefined })
     });
     const data = await res.json();
     return !!(data && data.ok);
@@ -568,12 +590,25 @@ function whoAmIPicker(onPicked){
           </select>
         </div>
         <div class="field">
-          <label>رمز مخصوص خودت:</label>
+          <label>رمز فعلیت:</label>
           <input type="password" id="whoAmIPassword" placeholder="رمزی که تو پی‌وی بهت داده شد">
+        </div>
+        <div class="field">
+          <button type="button" class="btn btn-ghost" id="whoTogglePw" style="width:100%;">🔒 می‌خوام رمزمو عوض کنم</button>
+          <div id="whoPwChangeArea" style="display:none;margin-top:10px;">
+            <label>رمز جدید:</label>
+            <input type="password" id="whoNewPassword" placeholder="حداقل ۴ کاراکتر">
+            <label style="margin-top:8px;display:block;">تکرار رمز جدید:</label>
+            <input type="password" id="whoNewPasswordConfirm" placeholder="دوباره بنویسش">
+          </div>
         </div>
         <button class="btn btn-primary" style="width:100%;margin-top:8px;" id="whoConfirm">تایید</button>
       </div>
     </div>`;
+  document.getElementById('whoTogglePw').onclick = ()=>{
+    const pwArea = document.getElementById('whoPwChangeArea');
+    pwArea.style.display = pwArea.style.display === 'none' ? '' : 'none';
+  };
   document.getElementById('whoClose').onclick = ()=> root.innerHTML = '';
   document.getElementById('whoOverlay').onclick = (e)=>{ if(e.target.id==='whoOverlay') root.innerHTML=''; };
   document.getElementById('whoConfirm').onclick = async ()=>{
@@ -581,13 +616,22 @@ function whoAmIPicker(onPicked){
     const password = document.getElementById('whoAmIPassword').value;
     const m = members.find(x=>x.id===id);
     if(!m || !password){ showToast('اسم و رمزتو وارد کن'); return; }
+    let newPassword = null;
+    if(document.getElementById('whoPwChangeArea').style.display !== 'none'){
+      const np = document.getElementById('whoNewPassword').value;
+      const npc = document.getElementById('whoNewPasswordConfirm').value;
+      if(np.length < 4){ showToast('رمز جدید باید حداقل ۴ کاراکتر باشه'); return; }
+      if(np !== npc){ showToast('تکرار رمز جدید درست نیست'); return; }
+      newPassword = np;
+    }
     const btn = document.getElementById('whoConfirm');
     btn.disabled = true; btn.textContent = 'در حال بررسی...';
-    const verified = await verifyPassword(id, password);
+    const verified = await verifyPassword(id, password, newPassword);
     btn.disabled = false; btn.textContent = 'تایید';
     if(!verified){ showToast('رمز اشتباهه ❌'); return; }
-    me = { id: m.id, name: m.name, password: password };
+    me = { id: m.id, name: m.name, password: newPassword || password };
     root.innerHTML = '';
+    if(newPassword) showToast('رمزت عوض شد ✅');
     onPicked && onPicked();
   };
 }
