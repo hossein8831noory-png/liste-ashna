@@ -195,6 +195,34 @@
   }
   .name-select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(139,100,120,.25);font-family:inherit;font-size:14px;background:#fff;color:var(--plum);}
 
+  /* VIP cards */
+  .vip-card{
+    position:relative;
+    border:2px solid transparent;
+    background-clip:padding-box, border-box;
+    background-origin:padding-box, border-box;
+    background-image: linear-gradient(#fffaf9,#fffaf9), linear-gradient(135deg,#f3d17a,#c9a227);
+    box-shadow:0 12px 34px rgba(201,162,39,.28);
+  }
+  .vip-card.vip-boy{ background-image: linear-gradient(#fffaf9,#fffaf9), linear-gradient(135deg,#8fc7ff,#c9a227); box-shadow:0 12px 34px rgba(143,199,255,.3); }
+  .vip-card.vip-girl{ background-image: linear-gradient(#fffaf9,#fffaf9), linear-gradient(135deg,#ffb8d6,#c9a227); box-shadow:0 12px 34px rgba(255,184,214,.3); }
+  .vip-card::after{
+    content:'';position:absolute;inset:0;border-radius:20px;pointer-events:none;
+    background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);
+    background-size:220% 100%;animation:shimmer 3.2s ease-in-out infinite;
+  }
+  @keyframes shimmer{ 0%{background-position:180% 0;} 100%{background-position:-40% 0;} }
+  .vip-crown{position:absolute;top:-10px;left:14px;font-size:22px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2));}
+  .vip-avatar{
+    width:56px;height:56px;border-radius:50%;object-fit:cover;display:block;margin:0 0 8px;
+    border:2px solid #c9a227;
+  }
+  .vip-avatar-placeholder{
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff;
+    background:linear-gradient(135deg,#c9a227,#e8c76b);
+  }
+  .avatar-upload-preview{width:64px;height:64px;border-radius:50%;object-fit:cover;margin-top:8px;border:2px solid #c9a227;}
+
 </style>
 </head>
 <body>
@@ -271,6 +299,10 @@ function statusLabel(s){
   return s==='single' ? 'سینگل' : s==='relationship' ? 'تو رابطه' : 'وضعیت نامعلوم';
 }
 
+/* VIP members: id -> 'boy' | 'girl' (controls card styling + who can upload an avatar) */
+const VIP_MAP = { 15: 'boy', 4: 'boy', 16: 'girl', 0: 'girl' };
+function isVip(id){ return Object.prototype.hasOwnProperty.call(VIP_MAP, id); }
+
 async function loadMembers(){
   try{
     const res = await fetch(APPS_SCRIPT_URL, { method: 'GET' });
@@ -285,7 +317,8 @@ async function loadMembers(){
         name: String(norm.name || '').trim(),
         status: String(norm.status || 'unknown').trim(),
         rubika: String(norm.rubika || '').trim(),
-        bio: String(norm.bio || '')
+        bio: String(norm.bio || ''),
+        avatar: String(norm.avatar || '')
       };
     });
   }catch(e){
@@ -295,12 +328,12 @@ async function loadMembers(){
   }
 }
 
-async function saveMember(m, password, newPassword){
+async function saveMember(m, password, newPassword, avatar){
   try{
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids a CORS preflight Apps Script can't handle
-      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio, password: password, newPassword: newPassword || undefined })
+      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio, password: password, newPassword: newPassword || undefined, avatar: avatar || undefined })
     });
     const data = await res.json();
     return { ok: !!(data && data.ok), error: data && data.error };
@@ -328,8 +361,18 @@ function renderCard(m){
   const rubikaBlock = m.status === 'single'
     ? `<a class="rubika-link" href="${rubikaHref(m.rubika)}" target="_blank" rel="noopener">💬 ${m.rubika}</a>`
     : `<span class="private-tag">آیدی نمایش داده نمی‌شه</span>`;
+  const vipKind = VIP_MAP[m.id];
+  const cardClass = vipKind ? `card vip-card vip-${vipKind}` : 'card';
+  const avatarBlock = vipKind
+    ? (m.avatar
+        ? `<img class="vip-avatar" src="${m.avatar}" alt="">`
+        : `<div class="vip-avatar vip-avatar-placeholder">${escapeHtml(m.name.slice(0,1))}</div>`)
+    : '';
+  const crown = vipKind ? '<span class="vip-crown">👑</span>' : '';
   return `
-    <div class="card">
+    <div class="${cardClass}">
+      ${crown}
+      ${avatarBlock}
       <p class="name">${escapeHtml(m.name)}</p>
       <span class="badge ${m.status}">${statusLabel(m.status)}</span>
       <p class="${bioClass}">${escapeHtml(bioText)}</p>
@@ -422,6 +465,12 @@ function renderEditArea(id){
       <label>یه کم درباره خودم (اخلاق، ویژگی‌ها، علایق و ...):</label>
       <textarea id="bioInput" rows="4" placeholder="مثلاً: آرومم، شوخ‌طبعم، عاشق فیلمم، دنبال یکی که...">${escapeHtml(m.bio||'')}</textarea>
     </div>
+    ${isVip(m.id) ? `
+    <div class="field">
+      <label>👑 عکس پروفایل کارت VIP:</label>
+      <input type="file" accept="image/*" id="avatarInput">
+      <img id="avatarPreview" class="avatar-upload-preview" style="display:${m.avatar ? '' : 'none'};" src="${m.avatar || ''}">
+    </div>` : ''}
     <div class="field">
       <label>رمز فعلیت:</label>
       <input type="password" id="passwordInput" placeholder="رمزی که تو پی‌وی بهت داده شد">
@@ -445,6 +494,34 @@ function renderEditArea(id){
     const pwArea = document.getElementById('pwChangeArea');
     pwArea.style.display = pwArea.style.display === 'none' ? '' : 'none';
   };
+
+  let pendingAvatar = null;
+  const avatarInput = document.getElementById('avatarInput');
+  if(avatarInput){
+    avatarInput.onchange = ()=>{
+      const file = avatarInput.files[0];
+      if(!file) return;
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e)=>{
+        img.onload = ()=>{
+          const size = 160;
+          const canvas = document.createElement('canvas');
+          canvas.width = size; canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const side = Math.min(img.width, img.height);
+          const sx = (img.width - side)/2, sy = (img.height - side)/2;
+          ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+          pendingAvatar = canvas.toDataURL('image/jpeg', 0.6);
+          const preview = document.getElementById('avatarPreview');
+          preview.src = pendingAvatar;
+          preview.style.display = '';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+  }
 
   area.querySelectorAll('.radio-pill').forEach(pill=>{
     pill.addEventListener('click', ()=>{
@@ -473,12 +550,13 @@ function renderEditArea(id){
     // look up the live object by id (not the closured "m") in case the
     // background auto-refresh replaced the members array while this was open
     const target = members.find(x=>x.id===id) || m;
-    const prev = { status: target.status, rubika: target.rubika, bio: target.bio };
+    const prev = { status: target.status, rubika: target.rubika, bio: target.bio, avatar: target.avatar };
     target.status = status; target.rubika = rubika; target.bio = bio;
+    if(pendingAvatar) target.avatar = pendingAvatar;
     const saveBtn = document.getElementById('saveEdit');
     saveBtn.disabled = true;
     saveBtn.textContent = 'در حال ذخیره...';
-    const result = await saveMember(target, password, newPassword);
+    const result = await saveMember(target, password, newPassword, pendingAvatar);
     if(result.ok){
       renderList();
       closeModal();
@@ -486,7 +564,7 @@ function renderEditArea(id){
       await loadMembers();
       renderList();
     }else{
-      target.status = prev.status; target.rubika = prev.rubika; target.bio = prev.bio;
+      target.status = prev.status; target.rubika = prev.rubika; target.bio = prev.bio; target.avatar = prev.avatar;
       saveBtn.disabled = false;
       saveBtn.textContent = 'ذخیره';
       showToast(result.error === 'bad_password' ? 'رمز اشتباهه ❌' : 'ذخیره نشد، اتصالت رو چک کن و دوباره بزن');
