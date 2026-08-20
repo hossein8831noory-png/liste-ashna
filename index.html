@@ -8,15 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
 <style>
   :root{
-    --blush:#fbe4ec;
-    --lilac:#efe0f7;
-    --peach:#ffe9df;
-    --rose:#e88aa0;
-    --plum:#5b3a4c;
-    --plum-soft:#8a6478;
+    --blush:#e88ab0;
+    --lilac:#b083d6;
+    --peach:#ff8f6b;
+    --rose:#ff4f8b;
+    --plum:#3a1f30;
+    --plum-soft:#7a4f68;
     --gold:#d9a441;
     --ok-green:#8fae8a;
     --card:#fffaf9;
+    --neon-pink:#ff2e88;
+    --neon-cyan:#00e5ff;
+    --neon-purple:#a742ff;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -25,14 +28,30 @@
     color:var(--plum);
     min-height:100vh;
     background:
-      radial-gradient(circle at 15% 20%, rgba(255,255,255,.55), transparent 45%),
-      radial-gradient(circle at 85% 15%, rgba(239,224,247,.7), transparent 50%),
-      radial-gradient(circle at 50% 90%, rgba(255,233,223,.8), transparent 55%),
-      linear-gradient(160deg, var(--blush), var(--lilac) 55%, var(--peach));
+      radial-gradient(circle at 12% 15%, rgba(255,79,139,.35), transparent 45%),
+      radial-gradient(circle at 88% 12%, rgba(167,66,255,.32), transparent 50%),
+      radial-gradient(circle at 50% 95%, rgba(255,143,107,.32), transparent 55%),
+      radial-gradient(circle at 50% 50%, rgba(0,229,255,.10), transparent 60%),
+      linear-gradient(160deg, #3a1240, #5c1a4a 45%, #7a1f4e 100%);
     background-attachment:fixed;
     overflow-x:hidden;
     position:relative;
   }
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size:38px 38px;
+    animation:gridDrift 22s linear infinite;
+  }
+  @keyframes gridDrift{ 0%{background-position:0 0;} 100%{background-position:38px 38px;} }
+  .site-sticker{
+    position:fixed; font-size:26px; z-index:0; pointer-events:none;
+    opacity:.55; filter:drop-shadow(0 0 8px rgba(255,79,139,.6));
+    animation:float 9s ease-in-out infinite;
+  }
+
   .blob{
     position:fixed; border-radius:50%; filter:blur(60px); opacity:.5; z-index:0; pointer-events:none;
     animation:float 14s ease-in-out infinite;
@@ -49,20 +68,20 @@
   .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:18px 16px 60px;}
 
   .designer-tag{
-    text-align:center;font-size:12px;letter-spacing:2px;color:var(--plum-soft);
-    opacity:.75;margin-bottom:6px;text-transform:uppercase;
+    text-align:center;font-size:12px;letter-spacing:2px;color:rgba(255,235,245,.65);
+    opacity:.85;margin-bottom:6px;text-transform:uppercase;position:relative;z-index:1;
   }
 
-  header.hero{text-align:center;padding:18px 10px 26px;}
+  header.hero{text-align:center;padding:18px 10px 26px;position:relative;z-index:1;}
   header.hero h1{
-    font-size:32px;margin:0 0 6px;font-weight:800;color:var(--plum);
-    letter-spacing:.5px;
+    font-size:32px;margin:0 0 6px;font-weight:800;color:#fff0f7;
+    letter-spacing:.5px;text-shadow:0 2px 18px rgba(255,46,136,.45);
   }
-  header.hero h1 span{color:var(--rose);}
-  header.hero p{margin:0;color:var(--plum-soft);font-size:14.5px;line-height:1.8;}
+  header.hero h1 span{color:#ffd166;}
+  header.hero p{margin:0;color:rgba(255,235,245,.8);font-size:14.5px;line-height:1.8;}
 
   .toolbar{
-    display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:20px 0 8px;
+    display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:20px 0 8px;position:relative;z-index:1;
   }
   .btn{
     border:none;cursor:pointer;padding:11px 22px;border-radius:999px;font-family:inherit;
@@ -71,18 +90,18 @@
   .btn:active{transform:scale(.97);}
   .btn-primary{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;box-shadow:0 6px 18px rgba(216,116,140,.35);}
   .btn-primary:hover{box-shadow:0 8px 22px rgba(216,116,140,.45);}
-  .btn-ghost{background:rgba(255,255,255,.6);color:var(--plum);border:1px solid rgba(139,100,120,.25);}
-  .btn-ghost:hover{background:rgba(255,255,255,.85);}
+  .btn-ghost{background:rgba(255,255,255,.85);color:var(--plum);border:1px solid rgba(139,100,120,.25);}
+  .btn-ghost:hover{background:rgba(255,255,255,1);}
 
-  .status-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:14px 0 24px;font-size:13px;color:var(--plum-soft);}
+  .status-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:14px 0 24px;font-size:13px;color:rgba(255,235,245,.8);position:relative;z-index:1;}
   .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:5px;vertical-align:middle;}
 
   .section-title{
     display:flex;align-items:center;gap:10px;margin:34px 0 14px;
   }
-  .section-title h2{font-size:17px;margin:0;font-weight:700;color:var(--plum);white-space:nowrap;}
-  .section-title .line{flex:1;height:1px;background:linear-gradient(90deg,rgba(139,100,120,.35),transparent);}
-  .section-title .count{font-size:12.5px;color:var(--plum-soft);background:rgba(255,255,255,.6);padding:2px 10px;border-radius:999px;}
+  .section-title h2{font-size:17px;margin:0;font-weight:700;color:#fff0f7;white-space:nowrap;text-shadow:0 1px 8px rgba(0,0,0,.35);}
+  .section-title .line{flex:1;height:1px;background:linear-gradient(90deg,rgba(255,235,245,.35),transparent);}
+  .section-title .count{font-size:12.5px;color:var(--plum-soft);background:rgba(255,255,255,.85);padding:2px 10px;border-radius:999px;}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
 
@@ -145,6 +164,12 @@
   .radio-pill.active-single{border-color:var(--rose);background:#fdeef1;color:var(--rose);}
   .radio-pill.active-relationship{border-color:var(--gold);background:#f7efdd;color:#a9843a;}
   .radio-pill.active-unknown{border-color:#8fae8a;background:#eef0ea;color:#5f7256;}
+  .badge-pill{
+    flex:1;min-width:70px;text-align:center;padding:8px 6px;border-radius:12px;
+    border:1.5px solid rgba(139,100,120,.25);cursor:pointer;font-size:12px;font-weight:600;color:var(--plum-soft);
+    transition:all .15s ease;
+  }
+  .badge-pill-active{border-color:var(--gold);background:#fdf3df;color:#a9843a;}
   .modal-actions{display:flex;gap:10px;margin-top:18px;}
   .modal-actions .btn{flex:1;}
   .close-x{position:absolute;top:14px;left:14px;background:none;border:none;font-size:18px;color:var(--plum-soft);cursor:pointer;}
@@ -156,7 +181,7 @@
     box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:60;opacity:0;transition:opacity .25s ease;
   }
   .toast.show{opacity:1;}
-  footer.foot{text-align:center;margin-top:36px;font-size:12px;color:var(--plum-soft);opacity:.7;}
+  footer.foot{text-align:center;margin-top:36px;font-size:12px;color:rgba(255,235,245,.7);opacity:.9;position:relative;z-index:1;}
 
   /* Tabs */
   .tabbar{display:flex;gap:8px;justify-content:center;margin:22px 0 4px;}
@@ -276,6 +301,41 @@
   }
   .age-badge{ font-size:11.5px; font-weight:700; color:var(--plum-soft); background:rgba(139,100,120,.1); padding:2px 8px; border-radius:999px; }
 
+  .vip-name{
+    font-weight:800; letter-spacing:.3px;
+    background:linear-gradient(90deg, #ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
+    background-size:300% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:rgbShift 4s linear infinite;
+    text-shadow:none;
+  }
+  .vip-badges{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+  .vip-badge-chip{
+    font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;
+    background:linear-gradient(135deg,#2b2b3d,#1a1a2a); color:#fff;
+    border:1px solid rgba(255,255,255,.15);
+  }
+  .vip-quote{ font-size:13px; font-style:italic; color:var(--plum-soft); line-height:1.8; margin:6px 0 10px; }
+  .vip-tags{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+  .vip-tag-chip{
+    font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px;
+    background:rgba(0,229,255,.12); color:#0891a8; border:1px solid rgba(0,229,255,.3);
+  }
+  .vip-talents{
+    font-size:12.5px; color:var(--plum-soft); background:rgba(217,164,65,.12);
+    border:1px dashed rgba(217,164,65,.4); border-radius:12px; padding:8px 10px; margin-bottom:10px; line-height:1.8;
+  }
+  .vip-rubika{
+    position:relative; background:linear-gradient(135deg,#1a1a2a,#2b2b3d) !important;
+    border:1px solid transparent;
+    background-image:linear-gradient(#1a1a2a,#1a1a2a), linear-gradient(90deg,#ff5f6d,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
+    background-origin:border-box; background-clip:padding-box, border-box;
+    background-size:100% 100%, 300% 100%;
+    animation:rgbShift 4s linear infinite;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+  .vip-card:active{ transform:scale(.985); }
+
   .vip-avatar-placeholder{
     display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff;
     background:linear-gradient(135deg,#c9a227,#e8c76b);
@@ -288,6 +348,12 @@
 <div class="blob blob1"></div>
 <div class="blob blob2"></div>
 <div class="blob blob3"></div>
+<span class="site-sticker" style="top:8%;left:6%;animation-delay:0s;">🎮</span>
+<span class="site-sticker" style="top:22%;right:8%;animation-delay:1.2s;">🔥</span>
+<span class="site-sticker" style="top:55%;left:4%;animation-delay:2.4s;">❤️</span>
+<span class="site-sticker" style="top:70%;right:6%;animation-delay:.8s;">🎮</span>
+<span class="site-sticker" style="top:85%;left:12%;animation-delay:1.8s;">🔥</span>
+<span class="site-sticker" style="top:38%;right:14%;animation-delay:3s;">❤️</span>
 
 <div class="wrap">
   <div class="designer-tag">طراح: OFF</div>
@@ -362,6 +428,20 @@ function statusLabel(s){
 const VIP_MAP = { 15: 'boy', 4: 'boy', 16: 'girl', 0: 'girl' };
 function isVip(id){ return Object.prototype.hasOwnProperty.call(VIP_MAP, id); }
 
+function parseExtra(raw){
+  const base = { talents:'', quote:'', tags:[], badges:[] };
+  if(!raw) return base;
+  try{
+    const p = JSON.parse(raw);
+    return {
+      talents: String(p.talents || ''),
+      quote: String(p.quote || ''),
+      tags: Array.isArray(p.tags) ? p.tags.slice(0,6) : [],
+      badges: Array.isArray(p.badges) ? p.badges.slice(0,4) : []
+    };
+  }catch(e){ return base; }
+}
+
 async function loadMembers(){
   try{
     const res = await fetch(APPS_SCRIPT_URL, { method: 'GET' });
@@ -378,7 +458,8 @@ async function loadMembers(){
         rubika: String(norm.rubika || '').trim(),
         bio: String(norm.bio || ''),
         avatar: String(norm.avatar || ''),
-        age: norm.age ? Number(norm.age) : null
+        age: norm.age ? Number(norm.age) : null,
+        extra: parseExtra(norm.extra)
       };
     });
   }catch(e){
@@ -388,12 +469,12 @@ async function loadMembers(){
   }
 }
 
-async function saveMember(m, password, newPassword, avatar, age){
+async function saveMember(m, password, newPassword, avatar, age, extra){
   try{
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids a CORS preflight Apps Script can't handle
-      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio, password: password, newPassword: newPassword || undefined, avatar: avatar || undefined, age: age })
+      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio, password: password, newPassword: newPassword || undefined, avatar: avatar || undefined, age: age, extra: extra || undefined })
     });
     const data = await res.json();
     return { ok: !!(data && data.ok), error: data && data.error };
@@ -416,6 +497,13 @@ function rubikaHref(handle){
 }
 
 const VIP_STICKERS = { boy: ['⚡','🔥','🎮','🖤'], girl: ['✨','🌸','💎','🦋'] };
+const BADGE_OPTIONS = [
+  {key:'vip', label:'👑 VIP'},
+  {key:'og', label:'⚡ OG'},
+  {key:'gamer', label:'🎮 Gamer'},
+  {key:'premium', label:'💎 Premium'},
+  {key:'verified', label:'🛡️ Verified'}
+];
 
 function renderCard(m){
   const bioText = m.bio && m.bio.trim() ? m.bio.trim() : 'هنوز چیزی درباره خودش ننوشته';
@@ -441,6 +529,24 @@ function renderCard(m){
     : `<div class="vip-avatar vip-avatar-placeholder">${escapeHtml(m.name.slice(0,1))}</div>`;
   const stickers = VIP_STICKERS[vipKind];
   const stickerSpans = stickers.map((s,i)=>`<span class="vip-sticker vip-sticker-${i}">${s}</span>`).join('');
+
+  const vipRubikaBlock = m.status === 'single'
+    ? `<a class="rubika-link vip-rubika" href="${rubikaHref(m.rubika)}" target="_blank" rel="noopener">💬 ${m.rubika}</a>`
+    : `<span class="private-tag">آیدی نمایش داده نمی‌شه</span>`;
+
+  const ex = m.extra || { talents:'', quote:'', tags:[], badges:[] };
+  const badgeChips = (ex.badges||[]).map(k=>{
+    const b = BADGE_OPTIONS.find(x=>x.key===k);
+    return b ? `<span class="vip-badge-chip">${b.label}</span>` : '';
+  }).join('');
+  const quoteOrBio = ex.quote && ex.quote.trim()
+    ? `<p class="vip-quote">«${escapeHtml(ex.quote.trim())}»</p>`
+    : `<p class="${bioClass}">${escapeHtml(bioText)}</p>`;
+  const tagChips = (ex.tags||[]).length
+    ? `<div class="vip-tags">${ex.tags.map(t=>`<span class="vip-tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : '';
+  const talentsBlock = ex.talents && ex.talents.trim()
+    ? `<div class="vip-talents">🌟 استعدادها: ${escapeHtml(ex.talents.trim())}</div>` : '';
+
   return `
     <div class="vip-wrap">
       <div class="vip-glow vip-glow-${vipKind}"></div>
@@ -449,10 +555,13 @@ function renderCard(m){
         <span class="vip-ribbon">VIP</span>
         <span class="vip-crown">👑</span>
         ${avatarBlock}
-        <p class="name">${escapeHtml(m.name)} ${ageBadge}</p>
+        <p class="name vip-name">${escapeHtml(m.name)} ${ageBadge}</p>
+        ${badgeChips ? `<div class="vip-badges">${badgeChips}</div>` : ''}
         <span class="badge ${m.status}">${statusLabel(m.status)}</span>
-        <p class="${bioClass}">${escapeHtml(bioText)}</p>
-        ${rubikaBlock}
+        ${quoteOrBio}
+        ${tagChips}
+        ${talentsBlock}
+        ${vipRubikaBlock}
       </div>
     </div>`;
 }
@@ -552,6 +661,27 @@ function renderEditArea(id){
       <label>👑 عکس پروفایل کارت VIP:</label>
       <input type="file" accept="image/*" id="avatarInput">
       <img id="avatarPreview" class="avatar-upload-preview" style="display:${m.avatar ? '' : 'none'};" src="${m.avatar || ''}">
+    </div>
+    <div class="field">
+      <label>🌟 استعدادهات (اختیاری):</label>
+      <textarea id="talentsInput" rows="2" placeholder="مثلاً: گیتار می‌زنم، خوب آشپزی می‌کنم...">${escapeHtml((m.extra&&m.extra.talents)||'')}</textarea>
+    </div>
+    <div class="field">
+      <label>یه جمله‌ی کوتاه زیر اسمت (اختیاری):</label>
+      <input type="text" id="quoteInput" maxlength="60" placeholder="مثلاً: همیشه آروم، همیشه خودم" value="${escapeHtml((m.extra&&m.extra.quote)||'')}">
+    </div>
+    <div class="field">
+      <label>علاقه‌مندی‌ها، با کاما جدا کن (اختیاری):</label>
+      <input type="text" id="tagsInput" placeholder="🎮 گیم, 💻 کدنویسی, 🎵 موزیک" value="${escapeHtml(((m.extra&&m.extra.tags)||[]).join(', '))}">
+    </div>
+    <div class="field">
+      <label>نشان‌ها (حداکثر ۳ تا):</label>
+      <div class="radio-row" id="badgeRow">
+        ${BADGE_OPTIONS.map(b=>`
+          <label class="badge-pill ${(m.extra&&m.extra.badges||[]).includes(b.key)?'badge-pill-active':''}" data-badge="${b.key}">
+            <input type="checkbox" value="${b.key}" ${(m.extra&&m.extra.badges||[]).includes(b.key)?'checked':''} style="display:none;">${b.label}
+          </label>`).join('')}
+      </div>
     </div>` : ''}
     <div class="field">
       <label>رمز فعلیت:</label>
@@ -605,6 +735,19 @@ function renderEditArea(id){
     };
   }
 
+  const badgeRow = document.getElementById('badgeRow');
+  if(badgeRow){
+    badgeRow.querySelectorAll('.badge-pill').forEach(pill=>{
+      pill.addEventListener('click', ()=>{
+        const cb = pill.querySelector('input');
+        const activeCount = badgeRow.querySelectorAll('input:checked').length;
+        if(!cb.checked && activeCount >= 3){ showToast('حداکثر ۳ تا نشان می‌تونی انتخاب کنی'); return; }
+        cb.checked = !cb.checked;
+        pill.classList.toggle('badge-pill-active', cb.checked);
+      });
+    });
+  }
+
   area.querySelectorAll('.radio-pill').forEach(pill=>{
     pill.addEventListener('click', ()=>{
       area.querySelectorAll('.radio-pill').forEach(p=>{
@@ -634,13 +777,23 @@ function renderEditArea(id){
     // look up the live object by id (not the closured "m") in case the
     // background auto-refresh replaced the members array while this was open
     const target = members.find(x=>x.id===id) || m;
-    const prev = { status: target.status, rubika: target.rubika, bio: target.bio, avatar: target.avatar, age: target.age };
+    const prev = { status: target.status, rubika: target.rubika, bio: target.bio, avatar: target.avatar, age: target.age, extra: target.extra };
     target.status = status; target.rubika = rubika; target.bio = bio; target.age = ageVal;
     if(pendingAvatar) target.avatar = pendingAvatar;
+    let extraJson = null;
+    if(isVip(id)){
+      const talents = (document.getElementById('talentsInput').value || '').trim();
+      const quote = (document.getElementById('quoteInput').value || '').trim();
+      const tags = (document.getElementById('tagsInput').value || '').split(',').map(t=>t.trim()).filter(Boolean).slice(0,6);
+      const badges = badgeRow ? Array.from(badgeRow.querySelectorAll('input:checked')).map(cb=>cb.value) : [];
+      const extraObj = { talents, quote, tags, badges };
+      target.extra = extraObj;
+      extraJson = JSON.stringify(extraObj);
+    }
     const saveBtn = document.getElementById('saveEdit');
     saveBtn.disabled = true;
     saveBtn.textContent = 'در حال ذخیره...';
-    const result = await saveMember(target, password, newPassword, pendingAvatar, ageVal);
+    const result = await saveMember(target, password, newPassword, pendingAvatar, ageVal, extraJson);
     if(result.ok){
       renderList();
       closeModal();
@@ -648,7 +801,7 @@ function renderEditArea(id){
       await loadMembers();
       renderList();
     }else{
-      target.status = prev.status; target.rubika = prev.rubika; target.bio = prev.bio; target.avatar = prev.avatar; target.age = prev.age;
+      target.status = prev.status; target.rubika = prev.rubika; target.bio = prev.bio; target.avatar = prev.avatar; target.age = prev.age; target.extra = prev.extra;
       saveBtn.disabled = false;
       saveBtn.textContent = 'ذخیره';
       showToast(result.error === 'bad_password' ? 'رمز اشتباهه ❌' : 'ذخیره نشد، اتصالت رو چک کن و دوباره بزن');
@@ -813,16 +966,16 @@ async function renderGame(){
 
   if(!gameState) gameState = await fetchGameState();
   const s = gameState || { status: 'closed', players: [] };
-  const isHost = me.name === 'حسین';
+  const canCreateRoom = isVip(me.id);
 
   if(s.status === 'closed'){
     root.innerHTML = `
       <div class="game-card">
         <h3>🍾 جرأت یا حقیقت</h3>
-        <p class="sub">${isHost ? 'الان می‌تونی یه روم جدید باز کنی و تو گروه اعلامش کنی.' : 'الان بازی فعالی نیست. صبر کن حسین یه روم باز کنه و تو گروه اعلام کنه.'}</p>
-        ${isHost ? '<button class="btn btn-primary" id="createRoomBtn">شروع روم جدید</button>' : ''}
+        <p class="sub">${canCreateRoom ? 'الان می‌تونی یه روم جدید باز کنی و تو گروه اعلامش کنی.' : 'الان بازی فعالی نیست. صبر کن یکی از اعضای VIP یه روم باز کنه و تو گروه اعلام کنه.'}</p>
+        ${canCreateRoom ? '<button class="btn btn-primary" id="createRoomBtn">شروع روم جدید</button>' : ''}
       </div>`;
-    if(isHost){
+    if(canCreateRoom){
       document.getElementById('createRoomBtn').onclick = async ()=>{
         await sendGameAction('create', { id: me.id, host: me.name, password: me.password });
         await pollGame();
@@ -832,18 +985,20 @@ async function renderGame(){
     return;
   }
 
+  const isRoomHost = s.hostId === me.id;
+
   if(s.status === 'waiting'){
     const players = s.players || [];
     const iJoined = players.some(p=>p.id===me.id);
     root.innerHTML = `
       <div class="game-card">
         <h3>🍾 منتظر بازیکن‌ها...</h3>
-        <p class="sub">حداقل ۴ نفر باید آماده باشن تا بازی شروع بشه</p>
+        <p class="sub">میزبان: ${escapeHtml(s.host||'')} — حداقل ۴ نفر باید آماده باشن تا بازی شروع بشه</p>
         <div>${players.length ? players.map(p=>`<span class="player-chip">${escapeHtml(p.name)}</span>`).join('') : '<span class="sub">هنوز کسی نپیوسته</span>'}</div>
         <p class="sub" style="margin-top:10px;">${players.length} نفر آماده‌ان</p>
         ${!iJoined ? '<button class="btn btn-primary" id="joinBtn">ملحق شو + آماده‌ام ✅</button>' : '<p class="sub">✅ تو لیست آماده‌هایی</p>'}
-        ${isHost && players.length >= 4 ? '<button class="btn btn-primary" id="startBtn" style="margin-top:10px;">شروع بازی 🍾</button>' : ''}
-        ${isHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:10px;">بستن روم</button>' : ''}
+        ${isRoomHost && players.length >= 4 ? '<button class="btn btn-primary" id="startBtn" style="margin-top:10px;">شروع بازی 🍾</button>' : ''}
+        ${isRoomHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:10px;">بستن روم</button>' : ''}
       </div>`;
     if(!iJoined){
       document.getElementById('joinBtn').onclick = async ()=>{
@@ -851,15 +1006,15 @@ async function renderGame(){
         await pollGame();
       };
     }
-    if(isHost && players.length >= 4){
+    if(isRoomHost && players.length >= 4){
       document.getElementById('startBtn').onclick = async ()=>{
-        await sendGameAction('start', {});
+        await sendGameAction('start', { id: me.id });
         await pollGame();
       };
     }
-    if(isHost){
+    if(isRoomHost){
       document.getElementById('closeRoomBtn').onclick = async ()=>{
-        await sendGameAction('close', {});
+        await sendGameAction('close', { id: me.id });
         await pollGame();
       };
     }
@@ -940,7 +1095,7 @@ async function renderGame(){
       promptBlock = `<div class="prompt-card">${inner}</div>`;
 
       const resolved = (s.chosenType === 'truth' && s.answerText) || (s.chosenType === 'dare' && (s.dareDone === true || s.dareDone === false));
-      const canAdvance = resolved && (isHost || iAmTail);
+      const canAdvance = resolved && (isRoomHost || iAmTail);
       if(canAdvance){
         promptBlock += `<button class="btn btn-ghost" id="nextRoundBtn" style="width:100%;margin-top:12px;">دور بعد ➡️</button>`;
       }
@@ -957,7 +1112,7 @@ async function renderGame(){
         </div>
         <p class="sub">${statusLine}</p>
         ${promptBlock}
-        ${isHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:16px;">پایان بازی</button>' : ''}
+        ${isRoomHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:16px;">پایان بازی</button>' : ''}
       </div>`;
 
     if(canSpin){
@@ -987,9 +1142,9 @@ async function renderGame(){
     if(dareNo) dareNo.onclick = async ()=>{ await sendGameAction('dareResult', { id: me.id, done: false }); await pollGame(); };
     const nextBtn = document.getElementById('nextRoundBtn');
     if(nextBtn) nextBtn.onclick = async ()=>{ await sendGameAction('next', { id: me.id }); await pollGame(); };
-    if(isHost){
+    if(isRoomHost){
       document.getElementById('closeRoomBtn').onclick = async ()=>{
-        await sendGameAction('close', {});
+        await sendGameAction('close', { id: me.id });
         await pollGame();
       };
     }
