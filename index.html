@@ -178,22 +178,49 @@
     padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;margin:4px;
   }
   .player-chip.turn{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;}
-  .bottle-wrap{
-    width:120px;height:120px;margin:20px auto;position:relative;
-    display:flex;align-items:center;justify-content:center;
+
+  .circle-wrap{
+    width:280px;height:280px;margin:24px auto;position:relative;
+    border-radius:50%;background:radial-gradient(circle,#fff7f2,#fdeef1);
+    box-shadow:inset 0 0 0 2px rgba(216,116,140,.15);
   }
-  .bottle-emoji{
-    font-size:64px;display:inline-block;
-    transition:transform 2.2s cubic-bezier(.17,.67,.29,1.01);
-    transform:rotate(0deg);
-    cursor:pointer;
+  .seat{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:#fff;border:1.5px solid rgba(139,100,120,.2);color:var(--plum);
+    font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:999px;white-space:nowrap;
+    box-shadow:0 3px 8px rgba(139,80,105,.12);
   }
-  .bottle-emoji.disabled{cursor:default;opacity:.55;}
-  .spin-result{
-    margin-top:14px;font-size:16px;font-weight:700;color:var(--plum);
-    background:#f7efdd;padding:12px 16px;border-radius:14px;line-height:1.9;
+  .seat.head{background:linear-gradient(135deg,#89c9ff,#5b9fe0);color:#fff;border-color:transparent;}
+  .seat.tail{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;border-color:transparent;}
+  .seat.spinner-seat{box-shadow:0 0 0 3px var(--gold);}
+  .bottle-center{
+    position:absolute;top:50%;left:50%;width:14px;height:74px;margin:-37px 0 0 -7px;
+    transform-origin:50% 50%;
+    transition:transform 2.4s cubic-bezier(.15,.7,.25,1.02);
+    cursor:default;
   }
+  .bottle-center.can-spin{cursor:pointer;}
+  .bottle-shape{
+    width:100%;height:100%;border-radius:7px;
+    background:linear-gradient(180deg,#4a7a4a 0%,#5f9a5f 45%,#2f5030 100%);
+    position:relative;box-shadow:0 3px 8px rgba(0,0,0,.25);
+  }
+  .bottle-shape::before{
+    content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+    width:6px;height:14px;background:#2f5030;border-radius:3px 3px 0 0;
+  }
+  .prompt-card{
+    margin-top:18px;background:#fff;border-radius:18px;padding:18px;text-align:right;
+    box-shadow:0 8px 24px rgba(139,80,105,.12);
+  }
+  .prompt-kind{font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;display:inline-block;margin-bottom:8px;}
+  .prompt-kind.truth{background:#e6f2ff;color:#3d7ab5;}
+  .prompt-kind.dare{background:#fdeef1;color:var(--rose);}
+  .prompt-text{font-size:15px;line-height:2;color:var(--plum);font-weight:600;}
+  .answer-box{width:100%;min-height:70px;margin-top:10px;padding:10px;border-radius:12px;border:1px solid rgba(139,100,120,.25);font-family:inherit;font-size:14px;}
+  .answer-shown{margin-top:10px;background:#f7efdd;padding:10px 12px;border-radius:12px;font-size:14px;line-height:1.9;}
   .name-select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(139,100,120,.25);font-family:inherit;font-size:14px;background:#fff;color:var(--plum);}
+
 
   /* VIP cards */
   .vip-wrap{ position:relative; padding:10px; }
@@ -841,30 +868,125 @@ async function renderGame(){
 
   if(s.status === 'playing'){
     const order = s.order || [];
-    const currentPlayer = order[s.currentIndex] || null;
-    const myTurn = currentPlayer && currentPlayer.id === me.id;
+    const n = order.length;
+    const spinnerPlayer = order[s.currentIndex] || null;
+    const myTurnToSpin = spinnerPlayer && spinnerPlayer.id === me.id;
     const result = s.spinResult;
+    const phase = s.roundPhase || null; // null | 'choosing' | 'revealed'
+    const iAmTail = result && result.tailId === me.id;
+    const canSpin = myTurnToSpin && !phase;
+
+    const seatsHtml = order.map((p,i)=>{
+      const angleRad = (i * 360/n) * Math.PI/180;
+      const radius = 112;
+      const x = Math.round(radius*Math.sin(angleRad));
+      const y = Math.round(-radius*Math.cos(angleRad));
+      let cls = 'seat';
+      if(result && p.id === result.headId) cls += ' head';
+      if(result && p.id === result.tailId) cls += ' tail';
+      if(spinnerPlayer && p.id === spinnerPlayer.id && !result) cls += ' spinner-seat';
+      return `<span class="${cls}" style="left:calc(50% + ${x}px);top:calc(50% + ${y}px);">${escapeHtml(p.name)}</span>`;
+    }).join('');
+
+    const bottleAngle = result ? result.angle : 0;
+    const bottleExtraSpin = canSpin ? 0 : 0; // final angle only; spin flourish added at click time
+
+    let statusLine;
+    if(!phase) statusLine = myTurnToSpin ? '🌟 نوبت توئه! بزن رو بطری تا بچرخه' : `نوبت ${spinnerPlayer ? escapeHtml(spinnerPlayer.name) : '...'}`;
+    else if(phase === 'choosing') statusLine = `🍾 سر بطری: <b>${escapeHtml(result.headName)}</b> (پرسنده) ← ته بطری: <b>${escapeHtml(result.tailName)}</b> (پاسخ‌دهنده)`;
+    else statusLine = `${escapeHtml(result.headName)} از ${escapeHtml(result.tailName)} پرسید`;
+
+    let promptBlock = '';
+    if(phase === 'choosing'){
+      if(iAmTail){
+        promptBlock = `
+          <div class="prompt-card" style="text-align:center;">
+            <p class="sub">انتخاب کن:</p>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-primary" id="chooseDare" style="flex:1;">😈 جرأت</button>
+              <button class="btn btn-primary" id="chooseTruth" style="flex:1;">🤔 حقیقت</button>
+            </div>
+          </div>`;
+      }else{
+        promptBlock = `<div class="prompt-card" style="text-align:center;"><p class="sub">منتظر انتخاب ${escapeHtml(result.tailName)}...</p></div>`;
+      }
+    }else if(phase === 'revealed'){
+      const kindLabel = s.chosenType === 'truth' ? 'حقیقت' : 'جرأت';
+      let inner = `<span class="prompt-kind ${s.chosenType}">${kindLabel}</span><p class="prompt-text">${escapeHtml(s.prompt || '')}</p>`;
+      if(s.chosenType === 'truth'){
+        if(s.answerText){
+          inner += `<div class="answer-shown">جواب ${escapeHtml(result.tailName)}: ${escapeHtml(s.answerText)}</div>`;
+        }else if(iAmTail){
+          inner += `<textarea class="answer-box" id="answerInput" placeholder="جوابتو اینجا بنویس..."></textarea>
+                     <button class="btn btn-primary" id="submitAnswer" style="width:100%;margin-top:8px;">ثبت جواب</button>`;
+        }else{
+          inner += `<p class="sub">در انتظار پاسخ ${escapeHtml(result.tailName)}...</p>`;
+        }
+      }else{
+        inner += `<a class="btn btn-primary" style="display:block;text-decoration:none;margin-top:10px;" href="https://rubika.ir/joing/BBDEIIJCB0SJSOFDVZZXNXCCDDFDHRVC" target="_blank" rel="noopener">📸 رفتن به گروه و فرستادن مدرک</a>`;
+        if(s.dareDone === null || s.dareDone === undefined){
+          if(iAmTail){
+            inner += `<div style="display:flex;gap:10px;margin-top:10px;">
+                        <button class="btn btn-primary" id="dareDoneYes" style="flex:1;">✅ انجام دادم</button>
+                        <button class="btn btn-ghost" id="dareDoneNo" style="flex:1;">❌ نتونستم</button>
+                      </div>`;
+          }else{
+            inner += `<p class="sub" style="margin-top:8px;">در انتظار نتیجه...</p>`;
+          }
+        }else{
+          inner += `<p class="sub" style="margin-top:8px;">${s.dareDone ? '✅ انجام داد و مدرک فرستاد' : '❌ این‌بار نتونست انجامش بده'}</p>`;
+        }
+      }
+      promptBlock = `<div class="prompt-card">${inner}</div>`;
+
+      const resolved = (s.chosenType === 'truth' && s.answerText) || (s.chosenType === 'dare' && (s.dareDone === true || s.dareDone === false));
+      const canAdvance = resolved && (isHost || iAmTail);
+      if(canAdvance){
+        promptBlock += `<button class="btn btn-ghost" id="nextRoundBtn" style="width:100%;margin-top:12px;">دور بعد ➡️</button>`;
+      }
+    }
+
     root.innerHTML = `
       <div class="game-card">
-        <h3>🍾 بازی شروع شده</h3>
-        <div>${order.map(p=>`<span class="player-chip ${currentPlayer && p.id===currentPlayer.id ? 'turn':''}">${escapeHtml(p.name)}</span>`).join('')}</div>
-        <p class="sub" style="margin-top:12px;">${myTurn ? '🌟 نوبت توئه! بزن رو بطری تا بچرخه' : `نوبت ${currentPlayer ? escapeHtml(currentPlayer.name) : '...'}`}</p>
-        <div class="bottle-wrap">
-          <span class="bottle-emoji ${myTurn ? '' : 'disabled'}" id="bottleEl">🍾</span>
+        <h3>🍾 بازی جرأت یا حقیقت</h3>
+        <div class="circle-wrap">
+          ${seatsHtml}
+          <div class="bottle-center ${canSpin ? 'can-spin' : ''}" id="bottleEl" style="transform:rotate(${bottleAngle}deg);">
+            <div class="bottle-shape"></div>
+          </div>
         </div>
-        ${result ? `<div class="spin-result">بطری بین <b>${escapeHtml(result.p1)}</b> و <b>${escapeHtml(result.p2)}</b> ایستاد!</div>` : ''}
+        <p class="sub">${statusLine}</p>
+        ${promptBlock}
         ${isHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:16px;">پایان بازی</button>' : ''}
       </div>`;
-    if(myTurn){
+
+    if(canSpin){
       document.getElementById('bottleEl').onclick = async function(){
         const el = this;
-        el.classList.add('disabled');
-        const spins = 5 + Math.floor(Math.random()*3);
-        el.style.transform = `rotate(${spins*360 + Math.floor(Math.random()*360)}deg)`;
+        el.classList.remove('can-spin');
+        const currentDeg = 0;
+        el.style.transform = `rotate(${currentDeg + 1080 + Math.floor(Math.random()*360)}deg)`;
         await sendGameAction('spin', { id: me.id });
-        setTimeout(pollGame, 2300);
+        setTimeout(pollGame, 2500);
       };
     }
+    const chooseDareBtn = document.getElementById('chooseDare');
+    const chooseTruthBtn = document.getElementById('chooseTruth');
+    if(chooseDareBtn) chooseDareBtn.onclick = async ()=>{ await sendGameAction('choose', { id: me.id, choice: 'dare' }); await pollGame(); };
+    if(chooseTruthBtn) chooseTruthBtn.onclick = async ()=>{ await sendGameAction('choose', { id: me.id, choice: 'truth' }); await pollGame(); };
+    const submitAnswerBtn = document.getElementById('submitAnswer');
+    if(submitAnswerBtn) submitAnswerBtn.onclick = async ()=>{
+      const text = document.getElementById('answerInput').value.trim();
+      if(!text){ showToast('یه چیزی بنویس'); return; }
+      await sendGameAction('answer', { id: me.id, text });
+      await pollGame();
+    };
+    const dareYes = document.getElementById('dareDoneYes');
+    const dareNo = document.getElementById('dareDoneNo');
+    if(dareYes) dareYes.onclick = async ()=>{ await sendGameAction('dareResult', { id: me.id, done: true }); await pollGame(); };
+    if(dareNo) dareNo.onclick = async ()=>{ await sendGameAction('dareResult', { id: me.id, done: false }); await pollGame(); };
+    const nextBtn = document.getElementById('nextRoundBtn');
+    if(nextBtn) nextBtn.onclick = async ()=>{ await sendGameAction('next', { id: me.id }); await pollGame(); };
     if(isHost){
       document.getElementById('closeRoomBtn').onclick = async ()=>{
         await sendGameAction('close', {});
