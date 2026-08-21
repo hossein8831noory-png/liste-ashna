@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لیست بچه‌های گروه</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#e88ab0;
+    --lilac:#b083d6;
+    --peach:#ff8f6b;
+    --rose:#ff4f8b;
+    --plum:#3a1f30;
+    --plum-soft:#7a4f68;
+    --gold:#d9a441;
+    --ok-green:#8fae8a;
+    --card:#fffaf9;
+    --neon-pink:#ff2e88;
+    --neon-cyan:#00e5ff;
+    --neon-purple:#a742ff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Vazirmatn', sans-serif;
+    color:var(--plum);
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 12% 15%, rgba(255,79,139,.35), transparent 45%),
+      radial-gradient(circle at 88% 12%, rgba(167,66,255,.32), transparent 50%),
+      radial-gradient(circle at 50% 95%, rgba(255,143,107,.32), transparent 55%),
+      radial-gradient(circle at 50% 50%, rgba(0,229,255,.10), transparent 60%),
+      linear-gradient(160deg, #3a1240, #5c1a4a 45%, #7a1f4e 100%);
+    background-attachment:fixed;
+    overflow-x:hidden;
+    position:relative;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size:38px 38px;
+  }
+  .site-sticker{
+    position:fixed; font-size:24px; z-index:0; pointer-events:none;
+    opacity:.5;
+    animation:float 9s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .site-sticker, .blob{ animation:none !important; }
+  }
+
+  .blob{
+    position:fixed; border-radius:50%; filter:blur(30px); opacity:.4; z-index:0; pointer-events:none;
+    animation:float 14s ease-in-out infinite;
+  }
+  .blob1{width:280px;height:280px;background:#f6b8cd;top:-60px;left:-60px;}
+  .blob2{width:340px;height:340px;background:#d7bdf0;bottom:-100px;right:-80px;animation-delay:2s;}
+  .blob3{width:200px;height:200px;background:#ffd0b0;bottom:20%;left:10%;animation-delay:4s;}
+  @keyframes float{
+    0%,100%{transform:translateY(0) translateX(0);}
+    50%{transform:translateY(-24px) translateX(14px);}
+  }
+  @media (prefers-reduced-motion: reduce){ .blob{animation:none;} }
+
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:18px 16px 60px;}
+
+  .designer-tag{
+    text-align:center;font-size:12px;letter-spacing:2px;color:rgba(255,235,245,.65);
+    opacity:.85;margin-bottom:6px;text-transform:uppercase;position:relative;z-index:1;
+  }
+
+  header.hero{text-align:center;padding:18px 10px 26px;position:relative;z-index:1;}
+  header.hero h1{
+    font-size:32px;margin:0 0 6px;font-weight:800;color:#fff0f7;
+    letter-spacing:.5px;text-shadow:0 2px 18px rgba(255,46,136,.45);
+  }
+  header.hero h1 span{color:#ffd166;}
+  header.hero p{margin:0;color:rgba(255,235,245,.8);font-size:14.5px;line-height:1.8;}
+
+  .toolbar{
+    display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:20px 0 8px;position:relative;z-index:1;
+  }
+  .btn{
+    border:none;cursor:pointer;padding:11px 22px;border-radius:999px;font-family:inherit;
+    font-size:14.5px;font-weight:600;transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;box-shadow:0 6px 18px rgba(216,116,140,.35);}
+  .btn-primary:hover{box-shadow:0 8px 22px rgba(216,116,140,.45);}
+  .btn-ghost{background:rgba(255,255,255,.85);color:var(--plum);border:1px solid rgba(139,100,120,.25);}
+  .btn-ghost:hover{background:rgba(255,255,255,1);}
+
+  .status-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:14px 0 24px;font-size:13px;color:rgba(255,235,245,.8);position:relative;z-index:1;}
+  .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:5px;vertical-align:middle;}
+
+  .section-title{
+    display:flex;align-items:center;gap:10px;margin:34px 0 14px;
+  }
+  .section-title h2{font-size:17px;margin:0;font-weight:700;color:#fff0f7;white-space:nowrap;text-shadow:0 1px 8px rgba(0,0,0,.35);}
+  .section-title .line{flex:1;height:1px;background:linear-gradient(90deg,rgba(255,235,245,.35),transparent);}
+  .section-title .count{font-size:12.5px;color:var(--plum-soft);background:rgba(255,255,255,.85);padding:2px 10px;border-radius:999px;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+
+  .card{
+    background:var(--card);
+    border-radius:20px;
+    padding:16px 16px 14px;
+    box-shadow:0 8px 24px rgba(139,80,105,.10);
+    border:1px solid rgba(255,255,255,.7);
+    position:relative;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(139,80,105,.16);}
+  .card .name{font-size:16.5px;font-weight:700;margin:0 0 4px;color:var(--plum);}
+  .badge{
+    display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+    padding:3px 10px;border-radius:999px;margin-bottom:9px;
+  }
+  .badge.single{background:#fdeef1;color:var(--rose);}
+  .badge.relationship{background:#f1ece0;color:#a9843a;}
+  .badge.unknown{background:#eef0ea;color:#7a8a6e;}
+  .card .bio{font-size:13px;line-height:1.75;color:var(--plum-soft);min-height:20px;margin-bottom:10px;white-space:pre-wrap;}
+  .card .bio.empty{font-style:italic;opacity:.6;}
+  .rubika-link{
+    display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;
+    color:#fff;background:linear-gradient(135deg,var(--rose),#c9647e);
+    padding:7px 12px;border-radius:12px;text-decoration:none;
+  }
+  .rubika-link:hover{filter:brightness(1.06);}
+  .private-tag{font-size:12px;color:var(--plum-soft);opacity:.7;}
+
+  .empty-state{text-align:center;color:var(--plum-soft);font-size:14px;padding:30px 0;}
+
+  /* Modal */
+  .overlay{
+    position:fixed;inset:0;background:rgba(74,46,58,.35);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;z-index:50;padding:16px;
+  }
+  .modal{
+    background:#fffdfc;border-radius:22px;max-width:420px;width:100%;
+    padding:24px 22px;box-shadow:0 20px 50px rgba(90,50,65,.25);
+    max-height:88vh;overflow-y:auto;
+  }
+  .modal h3{margin:0 0 4px;font-size:18px;color:var(--plum);}
+  .modal .sub{font-size:13px;color:var(--plum-soft);margin:0 0 16px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--plum);margin-bottom:6px;}
+  select, textarea, input[type=text]{
+    width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(139,100,120,.25);
+    font-family:inherit;font-size:14px;background:#fff;color:var(--plum);resize:vertical;
+  }
+  select:focus, textarea:focus, input:focus{outline:2px solid var(--rose);outline-offset:1px;}
+  .radio-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .radio-pill{
+    flex:1;min-width:90px;text-align:center;padding:9px 8px;border-radius:12px;
+    border:1.5px solid rgba(139,100,120,.25);cursor:pointer;font-size:13px;font-weight:600;color:var(--plum-soft);
+    transition:all .15s ease;
+  }
+  .radio-pill input{display:none;}
+  .radio-pill.active-single{border-color:var(--rose);background:#fdeef1;color:var(--rose);}
+  .radio-pill.active-relationship{border-color:var(--gold);background:#f7efdd;color:#a9843a;}
+  .radio-pill.active-unknown{border-color:#8fae8a;background:#eef0ea;color:#5f7256;}
+  .badge-pill{
+    flex:1;min-width:70px;text-align:center;padding:8px 6px;border-radius:12px;
+    border:1.5px solid rgba(139,100,120,.25);cursor:pointer;font-size:12px;font-weight:600;color:var(--plum-soft);
+    transition:all .15s ease;
+  }
+  .badge-pill-active{border-color:var(--gold);background:#fdf3df;color:#a9843a;}
+  .modal-actions{display:flex;gap:10px;margin-top:18px;}
+  .modal-actions .btn{flex:1;}
+  .close-x{position:absolute;top:14px;left:14px;background:none;border:none;font-size:18px;color:var(--plum-soft);cursor:pointer;}
+  .modal{position:relative;}
+  .note{font-size:12px;color:var(--plum-soft);margin-top:10px;line-height:1.7;}
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+    background:var(--plum);color:#fff;padding:10px 20px;border-radius:999px;font-size:13.5px;
+    box-shadow:0 8px 24px rgba(0,0,0,.2);z-index:60;opacity:0;transition:opacity .25s ease;
+  }
+  .toast.show{opacity:1;}
+  footer.foot{text-align:center;margin-top:36px;font-size:12px;color:rgba(255,235,245,.7);opacity:.9;position:relative;z-index:1;}
+  .music-btn{
+    position:fixed; bottom:18px; left:18px; z-index:50;
+    width:46px;height:46px;border-radius:50%;border:none;font-size:19px;cursor:pointer;
+    background:linear-gradient(135deg,var(--rose),#a742ff); color:#fff;
+    box-shadow:0 6px 18px rgba(167,66,255,.4);
+  }
+  .music-btn.playing{ animation:musicPulse 1.6s ease-in-out infinite; }
+  @keyframes musicPulse{ 0%,100%{box-shadow:0 6px 18px rgba(167,66,255,.4);} 50%{box-shadow:0 6px 26px rgba(255,46,136,.55);} }
+
+  /* Tabs */
+  .tabbar{display:flex;gap:8px;justify-content:center;margin:22px 0 4px;}
+  .tab-btn{
+    border:none;background:rgba(255,255,255,.55);color:var(--plum-soft);
+    padding:9px 18px;border-radius:999px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  }
+  .tab-btn.active{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;}
+
+  /* Game */
+  .game-card{
+    background:var(--card);border-radius:22px;padding:22px 18px;margin-top:18px;
+    box-shadow:0 8px 24px rgba(139,80,105,.10);text-align:center;
+  }
+  .game-card h3{margin:0 0 10px;font-size:18px;color:var(--plum);}
+  .game-card p.sub{font-size:13.5px;color:var(--plum-soft);margin:0 0 16px;line-height:1.8;}
+  .player-chip{
+    display:inline-flex;align-items:center;gap:6px;background:#fdeef1;color:var(--rose);
+    padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;margin:4px;
+  }
+  .player-chip.turn{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;}
+
+  .circle-wrap{
+    width:280px;height:280px;margin:24px auto;position:relative;
+    border-radius:50%;background:radial-gradient(circle,#fff7f2,#fdeef1);
+    box-shadow:inset 0 0 0 2px rgba(216,116,140,.15);
+  }
+  .seat{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    background:#fff;border:1.5px solid rgba(139,100,120,.2);color:var(--plum);
+    font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:999px;white-space:nowrap;
+    box-shadow:0 3px 8px rgba(139,80,105,.12);
+  }
+  .seat.head{background:linear-gradient(135deg,#89c9ff,#5b9fe0);color:#fff;border-color:transparent;}
+  .seat.tail{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;border-color:transparent;}
+  .seat.spinner-seat{box-shadow:0 0 0 3px var(--gold);}
+  .bottle-center{
+    position:absolute;top:50%;left:50%;width:14px;height:74px;margin:-37px 0 0 -7px;
+    transform-origin:50% 50%;
+    transition:transform 2.4s cubic-bezier(.15,.7,.25,1.02);
+    cursor:default;
+  }
+  .bottle-center.can-spin{cursor:pointer;}
+  .bottle-shape{
+    width:100%;height:100%;border-radius:7px;
+    background:linear-gradient(180deg,#4a7a4a 0%,#5f9a5f 45%,#2f5030 100%);
+    position:relative;box-shadow:0 3px 8px rgba(0,0,0,.25);
+  }
+  .bottle-shape::before{
+    content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+    width:6px;height:14px;background:#2f5030;border-radius:3px 3px 0 0;
+  }
+  .prompt-card{
+    margin-top:18px;background:#fff;border-radius:18px;padding:18px;text-align:right;
+    box-shadow:0 8px 24px rgba(139,80,105,.12);
+  }
+  .prompt-kind{font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;display:inline-block;margin-bottom:8px;}
+  .prompt-kind.truth{background:#e6f2ff;color:#3d7ab5;}
+  .prompt-kind.dare{background:#fdeef1;color:var(--rose);}
+  .prompt-text{font-size:15px;line-height:2;color:var(--plum);font-weight:600;}
+  .answer-box{width:100%;min-height:70px;margin-top:10px;padding:10px;border-radius:12px;border:1px solid rgba(139,100,120,.25);font-family:inherit;font-size:14px;}
+  .answer-shown{margin-top:10px;background:#f7efdd;padding:10px 12px;border-radius:12px;font-size:14px;line-height:1.9;}
+  .name-select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(139,100,120,.25);font-family:inherit;font-size:14px;background:#fff;color:var(--plum);}
+
+
+  /* VIP cards */
+  .vip-wrap{ position:relative; padding:10px; }
+  .vip-glow{
+    position:absolute; inset:-6px; border-radius:26px; z-index:0;
+    background:conic-gradient(from 0deg, #ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
+    filter:blur(7px) saturate(1.2);
+    opacity:.75;
+    animation:rgbSpin 6s linear infinite;
+    will-change:transform;
+  }
+  @keyframes rgbSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  @keyframes rgbShift{ 0%{background-position:0% 50%;} 100%{background-position:400% 50%;} }
+
+  .vip-card{
+    position:relative; z-index:1;
+    border:2px solid transparent;
+    background-clip:padding-box, border-box;
+    background-origin:padding-box, border-box;
+    background-image: linear-gradient(160deg,#fffaf9,#fff3e0), linear-gradient(135deg,#f3d17a,#c9a227);
+  }
+  .vip-card.vip-boy{ background-image: linear-gradient(160deg,#fbfdff,#e6f2ff), linear-gradient(135deg,#8fc7ff,#c9a227); }
+  .vip-card.vip-girl{ background-image: linear-gradient(160deg,#fffafc,#ffe9f3), linear-gradient(135deg,#ffb8d6,#c9a227); }
+
+  .vip-ribbon{
+    position:absolute; top:14px; right:-30px; width:120px; text-align:center;
+    transform:rotate(45deg); background:linear-gradient(135deg,#e8c76b,#c9a227); color:#fff;
+    font-size:11px; font-weight:800; letter-spacing:1px; padding:3px 0; z-index:2;
+    box-shadow:0 3px 8px rgba(0,0,0,.2);
+  }
+  .vip-crown{position:absolute;top:-10px;left:14px;font-size:22px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2));z-index:2;}
+  .vip-avatar{
+    width:56px;height:56px;border-radius:50%;object-fit:cover;display:block;margin:0 0 8px;
+    border:2px solid #c9a227;
+  }
+  .vip-sticker{
+    position:absolute; font-size:20px; z-index:3; pointer-events:none;
+    animation:vipFloat 3.6s ease-in-out infinite;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.15));
+  }
+  .vip-sticker-0{ top:-6px; left:-6px; animation-delay:0s; }
+  .vip-sticker-1{ top:20%; right:-10px; animation-delay:.6s; }
+  .vip-sticker-2{ bottom:14%; left:-10px; animation-delay:1.2s; }
+  .vip-sticker-3{ bottom:-8px; right:8px; animation-delay:1.8s; }
+  @keyframes vipFloat{
+    0%,100%{ transform:translateY(0) rotate(-4deg); }
+    50%{ transform:translateY(-8px) rotate(6deg); }
+  }
+  .age-badge{ font-size:11.5px; font-weight:700; color:var(--plum-soft); background:rgba(139,100,120,.1); padding:2px 8px; border-radius:999px; }
+
+  .vip-name{
+    font-weight:800; letter-spacing:.3px;
+    background:linear-gradient(90deg, #ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
+    background-size:300% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:rgbShift 8s steps(24) infinite;
+    text-shadow:none;
+  }
+  .vip-badges{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
+  .vip-badge-chip{
+    font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px;
+    background:linear-gradient(135deg,#2b2b3d,#1a1a2a); color:#fff;
+    border:1px solid rgba(255,255,255,.15);
+  }
+  .vip-quote{ font-size:13px; font-style:italic; color:var(--plum-soft); line-height:1.8; margin:6px 0 10px; }
+  .vip-tags{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px; }
+  .vip-tag-chip{
+    font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px;
+    background:rgba(0,229,255,.12); color:#0891a8; border:1px solid rgba(0,229,255,.3);
+  }
+  .vip-talents{
+    font-size:12.5px; color:var(--plum-soft); background:rgba(217,164,65,.12);
+    border:1px dashed rgba(217,164,65,.4); border-radius:12px; padding:8px 10px; margin-bottom:10px; line-height:1.8;
+  }
+  .vip-rubika{
+    position:relative; background:linear-gradient(135deg,#1a1a2a,#2b2b3d) !important;
+    border:1px solid transparent;
+    background-image:linear-gradient(#1a1a2a,#1a1a2a), linear-gradient(90deg,#ff5f6d,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
+    background-origin:border-box; background-clip:padding-box, border-box;
+    background-size:100% 100%, 300% 100%;
+    animation:rgbShift 8s steps(24) infinite;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+  .vip-card:active{ transform:scale(.985); }
+
+  /* Owner card (حسین) — extra glow + sidebar + online dot */
+  .owner-wrap{ padding-left:34px; }
+  .owner-glow{
+    filter:blur(9px) saturate(1.4); opacity:.85; animation-duration:5s;
+  }
+  .owner-card{
+    background-image: linear-gradient(160deg,#12101c,#1b1430), linear-gradient(90deg,#ff5f6d,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
+    background-size:100% 100%, 300% 100%;
+    animation:rgbShift 8s steps(24) infinite;
+    color:#f0e9ff;
+  }
+  .owner-card::after{ background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.25) 50%,transparent 60%); }
+  .owner-card .badge{ filter:brightness(1.15); }
+  .owner-card .bio, .owner-card .bio.empty{ color:#cdbfe0; }
+  .owner-sidebar{
+    position:absolute; top:14px; bottom:14px; left:-30px; width:22px;
+    display:flex; flex-direction:column; align-items:center; justify-content:space-between; z-index:2;
+  }
+  .owner-dotgrid{
+    width:16px;height:16px;
+    background-image:radial-gradient(rgba(167,139,250,.8) 1.5px, transparent 1.5px);
+    background-size:5px 5px;
+  }
+  .owner-sidebar-text{
+    writing-mode:vertical-rl; font-size:10px; font-weight:800; letter-spacing:2px;
+    color:#a78bfa; text-shadow:0 0 6px rgba(167,139,250,.7);
+  }
+  .owner-bolt{ font-size:16px; filter:drop-shadow(0 0 6px #a78bfa); }
+  .owner-ribbon{
+    position:absolute; top:-12px; right:16px; z-index:2;
+    background:linear-gradient(135deg,#a78bfa,#5b9fe0); color:#fff; font-size:11px; font-weight:800;
+    padding:5px 14px; border-radius:999px; letter-spacing:1px;
+    box-shadow:0 4px 14px rgba(167,139,250,.5);
+  }
+  .owner-crown{ font-size:26px; filter:drop-shadow(0 0 10px rgba(255,209,102,.8)); animation:crownPulse 2s ease-in-out infinite; }
+  @keyframes crownPulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.12);} }
+  .owner-avatar-wrap{ position:relative; display:inline-block; }
+  .owner-avatar{ width:72px;height:72px; border:2.5px solid transparent;
+    background-image:linear-gradient(#12101c,#12101c), linear-gradient(90deg,#a78bfa,#63b3ed,#a78bfa);
+    background-origin:border-box; background-clip:padding-box, border-box;
+    background-size:100% 100%, 300% 100%; animation:rgbShift 8s steps(24) infinite;
+  }
+  .owner-online-dot{
+    position:absolute; bottom:4px; left:2px; width:12px;height:12px; border-radius:50%;
+    background:#3ddc84; border:2px solid #12101c; box-shadow:0 0 8px #3ddc84;
+    animation:dotPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes dotPulse{ 0%,100%{opacity:1;} 50%{opacity:.5;} }
+  .owner-name{ font-size:19px; }
+  .owner-quote{
+    position:relative; font-size:14px; color:#cdbfe0; line-height:1.9; margin:10px 0 14px;
+    background:rgba(167,139,250,.08); border:1px dashed rgba(167,139,250,.35); border-radius:14px; padding:14px 16px 14px 16px;
+  }
+  .owner-quote::before{ content:'"'; position:absolute; top:-6px; right:10px; font-size:34px; color:#a78bfa; opacity:.6; }
+
+
+  .vip-avatar-placeholder{
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff;
+    background:linear-gradient(135deg,#c9a227,#e8c76b);
+  }
+  .avatar-upload-preview{width:64px;height:64px;border-radius:50%;object-fit:cover;margin-top:8px;border:2px solid #c9a227;}
+
+</style>
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<span class="site-sticker" style="top:8%;left:6%;animation-delay:0s;">🎮</span>
+<span class="site-sticker" style="top:22%;right:8%;animation-delay:1.2s;">🔥</span>
+<span class="site-sticker" style="top:55%;left:4%;animation-delay:2.4s;">❤️</span>
+<span class="site-sticker" style="top:70%;right:6%;animation-delay:.8s;">🎮</span>
+<span class="site-sticker" style="top:85%;left:12%;animation-delay:1.8s;">🔥</span>
+<span class="site-sticker" style="top:38%;right:14%;animation-delay:3s;">❤️</span>
+
+<div class="wrap">
+  <div class="designer-tag">طراح: OFF</div>
+  <audio id="bgMusic" src="bg-music.mp3" loop preload="none"></audio>
+  <button id="musicToggle" class="music-btn" title="پخش/توقف موزیک">🎵</button>
+  <header class="hero">
+    <h1>وضعیت <span>قلب</span> بچه‌های گروه 💌</h1>
+    <p>هر کی سینگله، آیدی روبیکاش پایین کارتشه — هر کی تو رابطه‌ست، فقط باهاش گرم بگیر 😌<br>وضعیتت عوض شده؟ برو پایین و آپدیتش کن.</p>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn btn-primary" id="openIdentify">ورود / آپدیت وضعیت من</button>
+    <button class="btn btn-ghost" id="refreshBtn">🔄 بروزرسانی لیست</button>
+  </div>
+
+  <div class="tabbar">
+    <button class="tab-btn active" id="tabList">💌 لیست</button>
+    <button class="tab-btn" id="tabGame">🍾 جرأت یا حقیقت</button>
+  </div>
+
+  <div id="listView">
+  <div class="status-legend">
+    <span><span class="legend-dot" style="background:var(--rose)"></span>سینگل</span>
+    <span><span class="legend-dot" style="background:var(--gold)"></span>تو رابطه</span>
+    <span><span class="legend-dot" style="background:#8fae8a"></span>وضعیت نامعلوم</span>
+  </div>
+
+  <div id="listRoot"></div>
+  </div>
+
+  <div id="gameView" style="display:none;"></div>
+
+  <footer class="foot">فقط برای اعضای گروه — لطفاً لینک رو جای دیگه پخش نکن 🤍</footer>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="modalRoot"></div>
+<div id="whoAmIRoot"></div>
+
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwckddfB54509nta9468xf0SnG7ZMqhlP2WUEaWZFFPfIPaiNqRSaEyL5PakLUaNVU/exec';
+const REFRESH_MS = 30000; // polls frequently so the list feels live
+
+const SEED = [
+  {id:0,  name:"یسنا",              status:"single",       rubika:"@Denizzz__900",  bio:""},
+  {id:1,  name:"نیلماه",            status:"single",       rubika:"@Nilmah_nilmah", bio:""},
+  {id:2,  name:"امین",              status:"relationship", rubika:"@aminbul110",    bio:""},
+  {id:3,  name:"نگار",              status:"single",       rubika:"@Negarnazar90",  bio:""},
+  {id:4,  name:"ابول",              status:"relationship", rubika:"@Aboltex",       bio:""},
+  {id:5,  name:"امیر",              status:"relationship", rubika:"@Amir__Jafari3", bio:""},
+  {id:6,  name:"یاشار",             status:"single",       rubika:"@yaskaaas",      bio:""},
+  {id:7,  name:"ریحانه",            status:"relationship", rubika:"@reyhaneh3_96",  bio:""},
+  {id:8,  name:"فاطمه",             status:"relationship", rubika:"@R_123456778",   bio:""},
+  {id:9,  name:"هستی",              status:"single",       rubika:"@Stbir23",       bio:""},
+  {id:10, name:"پرنیا",             status:"single",       rubika:"@Snowfwakes",    bio:""},
+  {id:11, name:"مانی",              status:"single",       rubika:"@Ma_NiY8",       bio:""},
+  {id:12, name:"علی",               status:"single",       rubika:"@aliahaker",     bio:""},
+  {id:13, name:"اشکان",             status:"single",       rubika:"@ashkan__timoory", bio:""},
+  {id:14, name:"سارینا",            status:"relationship", rubika:"@mahtab__189",   bio:""},
+  {id:15, name:"حسین",              status:"single",       rubika:"@H_Alizadeh_N",  bio:""},
+  {id:16, name:"فاطمه",             status:"single",       rubika:"@Denizzz__90",   bio:""},
+  {id:17, name:"هانا",              status:"unknown",      rubika:"@Hanna79n",      bio:""},
+  {id:18, name:"رونیکا",            status:"unknown",      rubika:"@Ronika9577",    bio:""},
+];
+
+let members = [];
+
+function statusLabel(s){
+  return s==='single' ? 'سینگل' : s==='relationship' ? 'تو رابطه' : 'وضعیت نامعلوم';
+}
+
+/* VIP members: id -> 'boy' | 'girl' (controls card styling + who can upload an avatar) */
+const VIP_MAP = { 15: 'boy', 4: 'boy', 16: 'girl', 0: 'girl' };
+const OWNER_ID = 15;
+function isVip(id){ return Object.prototype.hasOwnProperty.call(VIP_MAP, id); }
+
+function parseExtra(raw){
+  const base = { talents:'', quote:'', tags:[], badges:[] };
+  if(!raw) return base;
+  try{
+    const p = JSON.parse(raw);
+    return {
+      talents: String(p.talents || ''),
+      quote: String(p.quote || ''),
+      tags: Array.isArray(p.tags) ? p.tags.slice(0,6) : [],
+      badges: Array.isArray(p.badges) ? p.badges.slice(0,4) : []
+    };
+  }catch(e){ return base; }
+}
+
+async function loadMembers(){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, { method: 'GET' });
+    const data = await res.json();
+    members = data.map(raw => {
+      // the sheet's header row may have stray spaces/casing; normalize keys
+      // (e.g. "name " -> "name") before reading each field
+      const norm = {};
+      Object.keys(raw).forEach(k => { norm[k.trim().toLowerCase()] = raw[k]; });
+      return {
+        id: Number(norm.id),
+        name: String(norm.name || '').trim(),
+        status: String(norm.status || 'unknown').trim(),
+        rubika: String(norm.rubika || '').trim(),
+        bio: String(norm.bio || ''),
+        avatar: String(norm.avatar || ''),
+        age: norm.age ? Number(norm.age) : null,
+        extra: parseExtra(norm.extra)
+      };
+    });
+  }catch(e){
+    console.error('load failed', e);
+    if(!members.length) members = SEED;
+    showToast('اتصال به لیست برقرار نشد، لیست ذخیره‌شده‌ی قبلی نشون داده می‌شه');
+  }
+}
+
+async function saveMember(m, password, newPassword, avatar, age, extra){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids a CORS preflight Apps Script can't handle
+      body: JSON.stringify({ id: m.id, status: m.status, rubika: m.rubika, bio: m.bio, password: password, newPassword: newPassword || undefined, avatar: avatar || undefined, age: age, extra: extra || undefined })
+    });
+    const data = await res.json();
+    return { ok: !!(data && data.ok), error: data && data.error };
+  }catch(e){
+    console.error('save failed', e);
+    return { ok: false };
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+function rubikaHref(handle){
+  const clean = handle.replace(/^@/, '').trim();
+  return 'https://rubika.ir/' + encodeURIComponent(clean);
+}
+
+const VIP_STICKERS = { boy: ['⚡','🔥'], girl: ['✨','💎'] };
+const BADGE_OPTIONS = [
+  {key:'vip', label:'👑 VIP'},
+  {key:'og', label:'⚡ OG'},
+  {key:'gamer', label:'🎮 Gamer'},
+  {key:'premium', label:'💎 Premium'},
+  {key:'verified', label:'🛡️ Verified'}
+];
+
+function renderCard(m){
+  const bioText = m.bio && m.bio.trim() ? m.bio.trim() : 'هنوز چیزی درباره خودش ننوشته';
+  const bioClass = m.bio && m.bio.trim() ? 'bio' : 'bio empty';
+  const rubikaBlock = m.status === 'single'
+    ? `<a class="rubika-link" href="${rubikaHref(m.rubika)}" target="_blank" rel="noopener">💬 ${m.rubika}</a>`
+    : `<span class="private-tag">آیدی نمایش داده نمی‌شه</span>`;
+  const ageBadge = m.age ? `<span class="age-badge">${m.age} سال</span>` : '';
+  const vipKind = VIP_MAP[m.id];
+
+  if(!vipKind){
+    return `
+      <div class="card">
+        <p class="name">${escapeHtml(m.name)} ${ageBadge}</p>
+        <span class="badge ${m.status}">${statusLabel(m.status)}</span>
+        <p class="${bioClass}">${escapeHtml(bioText)}</p>
+        ${rubikaBlock}
+      </div>`;
+  }
+
+  const isOwner = m.id === OWNER_ID;
+  const avatarBlock = m.avatar
+    ? `<img class="vip-avatar" src="${m.avatar}" alt="">`
+    : `<div class="vip-avatar vip-avatar-placeholder">${escapeHtml(m.name.slice(0,1))}</div>`;
+  const avatarWrapped = isOwner
+    ? `<div class="owner-avatar-wrap">${avatarBlock.replace('vip-avatar','vip-avatar owner-avatar')}<span class="owner-online-dot"></span></div>`
+    : avatarBlock;
+  const stickers = VIP_STICKERS[vipKind];
+  const stickerSpans = stickers.map((s,i)=>`<span class="vip-sticker vip-sticker-${i}">${s}</span>`).join('');
+
+  const vipRubikaBlock = m.status === 'single'
+    ? `<a class="rubika-link vip-rubika" href="${rubikaHref(m.rubika)}" target="_blank" rel="noopener">💬 ${m.rubika}</a>`
+    : `<span class="private-tag">آیدی نمایش داده نمی‌شه</span>`;
+
+  const ex = m.extra || { talents:'', quote:'', tags:[], badges:[] };
+  const badgeChips = (ex.badges||[]).map(k=>{
+    const b = BADGE_OPTIONS.find(x=>x.key===k);
+    return b ? `<span class="vip-badge-chip">${b.label}</span>` : '';
+  }).join('');
+  const quoteOrBio = ex.quote && ex.quote.trim()
+    ? `<p class="vip-quote ${isOwner?'owner-quote':''}">${isOwner?'':'«'}${escapeHtml(ex.quote.trim())}${isOwner?'':'»'}</p>`
+    : `<p class="${bioClass}">${escapeHtml(bioText)}</p>`;
+  const tagChips = (ex.tags||[]).length
+    ? `<div class="vip-tags">${ex.tags.map(t=>`<span class="vip-tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : '';
+  const talentsBlock = ex.talents && ex.talents.trim()
+    ? `<div class="vip-talents">🌟 استعدادها: ${escapeHtml(ex.talents.trim())}</div>` : '';
+
+  const ownerExtras = isOwner ? `
+    <span class="owner-sidebar">
+      <span class="owner-dotgrid"></span>
+      <span class="owner-sidebar-text">VIP MEMBER</span>
+      <span class="owner-bolt">⚡</span>
+    </span>
+    <span class="owner-ribbon">👑 OWNER</span>` : '';
+
+  return `
+    <div class="vip-wrap ${isOwner?'owner-wrap':''}">
+      <div class="vip-glow vip-glow-${vipKind} ${isOwner?'owner-glow':''}"></div>
+      ${stickerSpans}
+      <div class="card vip-card vip-${vipKind} ${isOwner?'owner-card':''}">
+        ${ownerExtras}
+        ${!isOwner ? '<span class="vip-ribbon">VIP</span>' : ''}
+        <span class="vip-crown ${isOwner?'owner-crown':''}">👑</span>
+        ${avatarWrapped}
+        <p class="name vip-name ${isOwner?'owner-name':''}">${escapeHtml(m.name)} ${ageBadge}</p>
+        ${badgeChips ? `<div class="vip-badges">${badgeChips}</div>` : ''}
+        <span class="badge ${m.status}">${statusLabel(m.status)}</span>
+        ${quoteOrBio}
+        ${tagChips}
+        ${talentsBlock}
+        ${vipRubikaBlock}
+      </div>
+    </div>`;
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function renderList(){
+  const root = document.getElementById('listRoot');
+  if(!members.length){ root.innerHTML = '<div class="empty-state">لیست خالیه</div>'; return; }
+
+  const groups = [
+    {key:'single', title:'سینگل‌ها'},
+    {key:'relationship', title:'تو رابطه‌ان'},
+    {key:'unknown', title:'وضعیت نامعلوم'},
+  ];
+
+  let html = '';
+  groups.forEach(g=>{
+    const items = members.filter(m=>m.status===g.key)
+      .sort((a,b)=> (isVip(b.id)?1:0) - (isVip(a.id)?1:0));
+    if(!items.length) return;
+    html += `
+      <div class="section-title">
+        <h2>${g.title}</h2>
+        <div class="line"></div>
+        <span class="count">${items.length} نفر</span>
+      </div>
+      <div class="grid">${items.map(renderCard).join('')}</div>`;
+  });
+  root.innerHTML = html;
+}
+
+function openIdentifyModal(){
+  const root = document.getElementById('modalRoot');
+  const options = members.map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+  root.innerHTML = `
+    <div class="overlay" id="overlay">
+      <div class="modal">
+        <button class="close-x" id="closeModal">✕</button>
+        <h3>خودت رو انتخاب کن</h3>
+        <p class="sub">اول بگو کدوم یکی از لیست تویی، بعد وضعیتت رو آپدیت کن</p>
+        <div class="field">
+          <label>اسم من:</label>
+          <select id="whoSelect">
+            <option value="">— انتخاب کن —</option>
+            ${options}
+          </select>
+        </div>
+        <div id="editArea"></div>
+      </div>
+    </div>`;
+  document.getElementById('closeModal').onclick = closeModal;
+  document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') closeModal(); };
+  document.getElementById('whoSelect').onchange = (e)=>{
+    const id = e.target.value;
+    renderEditArea(id === '' ? null : parseInt(id));
+  };
+}
+
+function renderEditArea(id){
+  const area = document.getElementById('editArea');
+  if(id === null){ area.innerHTML = ''; return; }
+  const m = members.find(x=>x.id===id);
+  area.innerHTML = `
+    <div class="field">
+      <label>وضعیت فعلیم:</label>
+      <div class="radio-row" id="statusRow">
+        <label class="radio-pill ${m.status==='single'?'active-single':''}" data-val="single">
+          <input type="radio" name="st" value="single" ${m.status==='single'?'checked':''}>سینگل
+        </label>
+        <label class="radio-pill ${m.status==='relationship'?'active-relationship':''}" data-val="relationship">
+          <input type="radio" name="st" value="relationship" ${m.status==='relationship'?'checked':''}>تو رابطه
+        </label>
+        <label class="radio-pill ${m.status==='unknown'?'active-unknown':''}" data-val="unknown">
+          <input type="radio" name="st" value="unknown" ${m.status==='unknown'?'checked':''}>نامعلوم
+        </label>
+      </div>
+    </div>
+    <div class="field">
+      <label>آیدی روبیکام:</label>
+      <input type="text" id="rubikaInput" value="${escapeHtml(m.rubika)}">
+    </div>
+    <div class="field">
+      <label>یه کم درباره خودم (اخلاق، ویژگی‌ها، علایق و ...):</label>
+      <textarea id="bioInput" rows="4" placeholder="مثلاً: آرومم، شوخ‌طبعم، عاشق فیلمم، دنبال یکی که...">${escapeHtml(m.bio||'')}</textarea>
+    </div>
+    <div class="field">
+      <label>سنت:</label>
+      <input type="number" id="ageInput" min="1" max="100" placeholder="مثلاً: ۲۲" value="${m.age || ''}">
+    </div>
+    ${isVip(m.id) ? `
+    <div class="field">
+      <label>👑 عکس پروفایل کارت VIP:</label>
+      <input type="file" accept="image/*" id="avatarInput">
+      <img id="avatarPreview" class="avatar-upload-preview" style="display:${m.avatar ? '' : 'none'};" src="${m.avatar || ''}">
+    </div>
+    <div class="field">
+      <label>🌟 استعدادهات (اختیاری):</label>
+      <textarea id="talentsInput" rows="2" placeholder="مثلاً: گیتار می‌زنم، خوب آشپزی می‌کنم...">${escapeHtml((m.extra&&m.extra.talents)||'')}</textarea>
+    </div>
+    <div class="field">
+      <label>یه جمله‌ی کوتاه زیر اسمت (اختیاری):</label>
+      <input type="text" id="quoteInput" maxlength="60" placeholder="مثلاً: همیشه آروم، همیشه خودم" value="${escapeHtml((m.extra&&m.extra.quote)||'')}">
+    </div>
+    <div class="field">
+      <label>علاقه‌مندی‌ها، با کاما جدا کن (اختیاری):</label>
+      <input type="text" id="tagsInput" placeholder="🎮 گیم, 💻 کدنویسی, 🎵 موزیک" value="${escapeHtml(((m.extra&&m.extra.tags)||[]).join(', '))}">
+    </div>
+    <div class="field">
+      <label>نشان‌ها (حداکثر ۳ تا):</label>
+      <div class="radio-row" id="badgeRow">
+        ${BADGE_OPTIONS.map(b=>`
+          <label class="badge-pill ${(m.extra&&m.extra.badges||[]).includes(b.key)?'badge-pill-active':''}" data-badge="${b.key}">
+            <input type="checkbox" value="${b.key}" ${(m.extra&&m.extra.badges||[]).includes(b.key)?'checked':''} style="display:none;">${b.label}
+          </label>`).join('')}
+      </div>
+    </div>` : ''}
+    <div class="field">
+      <label>رمز فعلیت:</label>
+      <input type="password" id="passwordInput" placeholder="رمزی که تو پی‌وی بهت داده شد">
+    </div>
+    <div class="field">
+      <button type="button" class="btn btn-ghost" id="togglePwChange" style="width:100%;">🔒 می‌خوام رمزمو به دلخواه خودم عوض کنم</button>
+      <div id="pwChangeArea" style="display:none;margin-top:10px;">
+        <label>رمز جدید:</label>
+        <input type="password" id="newPasswordInput" placeholder="حداقل ۴ کاراکتر">
+        <label style="margin-top:8px;display:block;">تکرار رمز جدید:</label>
+        <input type="password" id="newPasswordConfirm" placeholder="دوباره بنویسش">
+      </div>
+    </div>
+    <p class="note">آیدی روبیکات فقط وقتی زیر کارتت نشون داده می‌شه که وضعیتت «سینگل» باشه.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancelEdit">انصراف</button>
+      <button class="btn btn-primary" id="saveEdit">ذخیره</button>
+    </div>`;
+
+  document.getElementById('togglePwChange').onclick = ()=>{
+    const pwArea = document.getElementById('pwChangeArea');
+    pwArea.style.display = pwArea.style.display === 'none' ? '' : 'none';
+  };
+
+  let pendingAvatar = null;
+  const avatarInput = document.getElementById('avatarInput');
+  if(avatarInput){
+    avatarInput.onchange = ()=>{
+      const file = avatarInput.files[0];
+      if(!file) return;
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e)=>{
+        img.onload = ()=>{
+          const size = 160;
+          const canvas = document.createElement('canvas');
+          canvas.width = size; canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const side = Math.min(img.width, img.height);
+          const sx = (img.width - side)/2, sy = (img.height - side)/2;
+          ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+          pendingAvatar = canvas.toDataURL('image/jpeg', 0.6);
+          const preview = document.getElementById('avatarPreview');
+          preview.src = pendingAvatar;
+          preview.style.display = '';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+  }
+
+  const badgeRow = document.getElementById('badgeRow');
+  if(badgeRow){
+    badgeRow.querySelectorAll('.badge-pill').forEach(pill=>{
+      pill.addEventListener('click', ()=>{
+        const cb = pill.querySelector('input');
+        const activeCount = badgeRow.querySelectorAll('input:checked').length;
+        if(!cb.checked && activeCount >= 3){ showToast('حداکثر ۳ تا نشان می‌تونی انتخاب کنی'); return; }
+        cb.checked = !cb.checked;
+        pill.classList.toggle('badge-pill-active', cb.checked);
+      });
+    });
+  }
+
+  area.querySelectorAll('.radio-pill').forEach(pill=>{
+    pill.addEventListener('click', ()=>{
+      area.querySelectorAll('.radio-pill').forEach(p=>{
+        p.classList.remove('active-single','active-relationship','active-unknown');
+      });
+      pill.classList.add('active-' + pill.dataset.val);
+    });
+  });
+
+  document.getElementById('cancelEdit').onclick = closeModal;
+  document.getElementById('saveEdit').onclick = async ()=>{
+    const status = area.querySelector('input[name=st]:checked').value;
+    const rubika = document.getElementById('rubikaInput').value.trim() || m.rubika;
+    const bio = document.getElementById('bioInput').value.trim();
+    const ageVal = parseInt(document.getElementById('ageInput').value);
+    if(!ageVal || ageVal < 1 || ageVal > 100){ showToast('سنتو درست وارد کن'); return; }
+    const password = document.getElementById('passwordInput').value;
+    if(!password){ showToast('رمز فعلیتو وارد کن'); return; }
+    let newPassword = null;
+    if(document.getElementById('pwChangeArea').style.display !== 'none'){
+      const np = document.getElementById('newPasswordInput').value;
+      const npc = document.getElementById('newPasswordConfirm').value;
+      if(np.length < 4){ showToast('رمز جدید باید حداقل ۴ کاراکتر باشه'); return; }
+      if(np !== npc){ showToast('تکرار رمز جدید درست نیست'); return; }
+      newPassword = np;
+    }
+    // look up the live object by id (not the closured "m") in case the
+    // background auto-refresh replaced the members array while this was open
+    const target = members.find(x=>x.id===id) || m;
+    const prev = { status: target.status, rubika: target.rubika, bio: target.bio, avatar: target.avatar, age: target.age, extra: target.extra };
+    target.status = status; target.rubika = rubika; target.bio = bio; target.age = ageVal;
+    if(pendingAvatar) target.avatar = pendingAvatar;
+    let extraJson = null;
+    if(isVip(id)){
+      const talents = (document.getElementById('talentsInput').value || '').trim();
+      const quote = (document.getElementById('quoteInput').value || '').trim();
+      const tags = (document.getElementById('tagsInput').value || '').split(',').map(t=>t.trim()).filter(Boolean).slice(0,6);
+      const badges = badgeRow ? Array.from(badgeRow.querySelectorAll('input:checked')).map(cb=>cb.value) : [];
+      const extraObj = { talents, quote, tags, badges };
+      target.extra = extraObj;
+      extraJson = JSON.stringify(extraObj);
+    }
+    const saveBtn = document.getElementById('saveEdit');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'در حال ذخیره...';
+    const result = await saveMember(target, password, newPassword, pendingAvatar, ageVal, extraJson);
+    if(result.ok){
+      renderList();
+      closeModal();
+      showToast(newPassword ? 'ذخیره شد و رمزت عوض شد ✅' : 'وضعیتت آپدیت شد ✅');
+      await loadMembers();
+      renderList();
+    }else{
+      target.status = prev.status; target.rubika = prev.rubika; target.bio = prev.bio; target.avatar = prev.avatar; target.age = prev.age; target.extra = prev.extra;
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'ذخیره';
+      showToast(result.error === 'bad_password' ? 'رمز اشتباهه ❌' : 'ذخیره نشد، اتصالت رو چک کن و دوباره بزن');
+    }
+  };
+}
+
+function closeModal(){
+  document.getElementById('modalRoot').innerHTML = '';
+}
+
+document.getElementById('openIdentify').onclick = openIdentifyModal;
+document.getElementById('refreshBtn').onclick = async ()=>{
+  await loadMembers();
+  renderList();
+  showToast('لیست بروز شد');
+};
+
+/* ===================== Tabs ===================== */
+let me = null; // { id, name } — who the current browser session is
+let gamePollTimer = null;
+
+document.getElementById('tabList').onclick = ()=> switchTab('list');
+document.getElementById('tabGame').onclick = ()=> switchTab('game');
+
+function switchTab(tab){
+  const isList = tab === 'list';
+  document.getElementById('listView').style.display = isList ? '' : 'none';
+  document.getElementById('gameView').style.display = isList ? 'none' : '';
+  document.getElementById('tabList').classList.toggle('active', isList);
+  document.getElementById('tabGame').classList.toggle('active', !isList);
+  if(isList){
+    if(gamePollTimer){ clearInterval(gamePollTimer); gamePollTimer = null; }
+  }else{
+    renderGame();
+    if(!gamePollTimer) gamePollTimer = setInterval(pollGame, 4000);
+  }
+}
+
+/* ===================== Game: data layer ===================== */
+async function fetchGameState(){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL + '?type=game');
+    return await res.json();
+  }catch(e){
+    console.error('game fetch failed', e);
+    return null;
+  }
+}
+
+async function sendGameAction(action, payload){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ scope: 'game', action }, payload || {}))
+    });
+    return await res.json();
+  }catch(e){
+    console.error('game action failed', e);
+    return null;
+  }
+}
+
+async function verifyPassword(id, password, newPassword){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ scope: 'auth', id, password, newPassword: newPassword || undefined })
+    });
+    const data = await res.json();
+    return !!(data && data.ok);
+  }catch(e){
+    console.error('verify failed', e);
+    return false;
+  }
+}
+
+let gameState = null;
+let lastGameHash = '';
+
+async function pollGame(){
+  const state = await fetchGameState();
+  if(!state) return;
+  const h = JSON.stringify(state);
+  gameState = state;
+  if(h !== lastGameHash){
+    lastGameHash = h;
+    renderGame();
+  }
+}
+
+/* ===================== Game: UI ===================== */
+function whoAmIPicker(onPicked){
+  const root = document.getElementById('whoAmIRoot');
+  const options = members.map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+  root.innerHTML = `
+    <div class="overlay" id="whoOverlay">
+      <div class="modal">
+        <button class="close-x" id="whoClose">✕</button>
+        <h3>اول بگو تو کدومی</h3>
+        <p class="sub">این فقط برای شناسایی توئه تو بازی</p>
+        <div class="field">
+          <select id="whoAmISelect" class="name-select">
+            <option value="">— انتخاب کن —</option>
+            ${options}
+          </select>
+        </div>
+        <div class="field">
+          <label>رمز فعلیت:</label>
+          <input type="password" id="whoAmIPassword" placeholder="رمزی که تو پی‌وی بهت داده شد">
+        </div>
+        <div class="field">
+          <button type="button" class="btn btn-ghost" id="whoTogglePw" style="width:100%;">🔒 می‌خوام رمزمو عوض کنم</button>
+          <div id="whoPwChangeArea" style="display:none;margin-top:10px;">
+            <label>رمز جدید:</label>
+            <input type="password" id="whoNewPassword" placeholder="حداقل ۴ کاراکتر">
+            <label style="margin-top:8px;display:block;">تکرار رمز جدید:</label>
+            <input type="password" id="whoNewPasswordConfirm" placeholder="دوباره بنویسش">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:8px;" id="whoConfirm">تایید</button>
+      </div>
+    </div>`;
+  document.getElementById('whoTogglePw').onclick = ()=>{
+    const pwArea = document.getElementById('whoPwChangeArea');
+    pwArea.style.display = pwArea.style.display === 'none' ? '' : 'none';
+  };
+  document.getElementById('whoClose').onclick = ()=> root.innerHTML = '';
+  document.getElementById('whoOverlay').onclick = (e)=>{ if(e.target.id==='whoOverlay') root.innerHTML=''; };
+  document.getElementById('whoConfirm').onclick = async ()=>{
+    const id = parseInt(document.getElementById('whoAmISelect').value);
+    const password = document.getElementById('whoAmIPassword').value;
+    const m = members.find(x=>x.id===id);
+    if(!m || !password){ showToast('اسم و رمزتو وارد کن'); return; }
+    let newPassword = null;
+    if(document.getElementById('whoPwChangeArea').style.display !== 'none'){
+      const np = document.getElementById('whoNewPassword').value;
+      const npc = document.getElementById('whoNewPasswordConfirm').value;
+      if(np.length < 4){ showToast('رمز جدید باید حداقل ۴ کاراکتر باشه'); return; }
+      if(np !== npc){ showToast('تکرار رمز جدید درست نیست'); return; }
+      newPassword = np;
+    }
+    const btn = document.getElementById('whoConfirm');
+    btn.disabled = true; btn.textContent = 'در حال بررسی...';
+    const verified = await verifyPassword(id, password, newPassword);
+    btn.disabled = false; btn.textContent = 'تایید';
+    if(!verified){ showToast('رمز اشتباهه ❌'); return; }
+    me = { id: m.id, name: m.name, password: newPassword || password };
+    root.innerHTML = '';
+    if(newPassword) showToast('رمزت عوض شد ✅');
+    onPicked && onPicked();
+  };
+}
+
+async function renderGame(){
+  const root = document.getElementById('gameView');
+  if(!me){
+    root.innerHTML = `
+      <div class="game-card">
+        <h3>🍾 جرأت یا حقیقت</h3>
+        <p class="sub">اول باید بگی تو کدوم عضو گروهی</p>
+        <button class="btn btn-primary" id="pickMeBtn">من رو انتخاب کن</button>
+      </div>`;
+    document.getElementById('pickMeBtn').onclick = ()=> whoAmIPicker(renderGame);
+    return;
+  }
+
+  if(!gameState) gameState = await fetchGameState();
+  const s = gameState || { status: 'closed', players: [] };
+  const canCreateRoom = isVip(me.id);
+
+  if(s.status === 'closed'){
+    root.innerHTML = `
+      <div class="game-card">
+        <h3>🍾 جرأت یا حقیقت</h3>
+        <p class="sub">${canCreateRoom ? 'الان می‌تونی یه روم جدید باز کنی و تو گروه اعلامش کنی.' : 'الان بازی فعالی نیست. صبر کن یکی از اعضای VIP یه روم باز کنه و تو گروه اعلام کنه.'}</p>
+        ${canCreateRoom ? '<button class="btn btn-primary" id="createRoomBtn">شروع روم جدید</button>' : ''}
+      </div>`;
+    if(canCreateRoom){
+      document.getElementById('createRoomBtn').onclick = async ()=>{
+        await sendGameAction('create', { id: me.id, host: me.name, password: me.password });
+        await pollGame();
+        showToast('روم باز شد، حالا تو گروه اعلامش کن 🎉');
+      };
+    }
+    return;
+  }
+
+  const isRoomHost = s.hostId === me.id;
+
+  if(s.status === 'waiting'){
+    const players = s.players || [];
+    const iJoined = players.some(p=>p.id===me.id);
+    root.innerHTML = `
+      <div class="game-card">
+        <h3>🍾 منتظر بازیکن‌ها...</h3>
+        <p class="sub">میزبان: ${escapeHtml(s.host||'')} — حداقل ۴ نفر باید آماده باشن تا بازی شروع بشه</p>
+        <div>${players.length ? players.map(p=>`<span class="player-chip">${escapeHtml(p.name)}</span>`).join('') : '<span class="sub">هنوز کسی نپیوسته</span>'}</div>
+        <p class="sub" style="margin-top:10px;">${players.length} نفر آماده‌ان</p>
+        ${!iJoined ? '<button class="btn btn-primary" id="joinBtn">ملحق شو + آماده‌ام ✅</button>' : '<p class="sub">✅ تو لیست آماده‌هایی</p>'}
+        ${isRoomHost && players.length >= 4 ? '<button class="btn btn-primary" id="startBtn" style="margin-top:10px;">شروع بازی 🍾</button>' : ''}
+        ${isRoomHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:10px;">بستن روم</button>' : ''}
+      </div>`;
+    if(!iJoined){
+      document.getElementById('joinBtn').onclick = async ()=>{
+        await sendGameAction('join', { id: me.id, name: me.name, password: me.password });
+        await pollGame();
+      };
+    }
+    if(isRoomHost && players.length >= 4){
+      document.getElementById('startBtn').onclick = async ()=>{
+        await sendGameAction('start', { id: me.id });
+        await pollGame();
+      };
+    }
+    if(isRoomHost){
+      document.getElementById('closeRoomBtn').onclick = async ()=>{
+        await sendGameAction('close', { id: me.id });
+        await pollGame();
+      };
+    }
+    return;
+  }
+
+  if(s.status === 'playing'){
+    const order = s.order || [];
+    const n = order.length;
+    const spinnerPlayer = order[s.currentIndex] || null;
+    const myTurnToSpin = spinnerPlayer && spinnerPlayer.id === me.id;
+    const result = s.spinResult;
+    const phase = s.roundPhase || null; // null | 'choosing' | 'revealed'
+    const iAmTail = result && result.tailId === me.id;
+    const canSpin = myTurnToSpin && !phase;
+
+    const seatsHtml = order.map((p,i)=>{
+      const angleRad = (i * 360/n) * Math.PI/180;
+      const radius = 112;
+      const x = Math.round(radius*Math.sin(angleRad));
+      const y = Math.round(-radius*Math.cos(angleRad));
+      let cls = 'seat';
+      if(result && p.id === result.headId) cls += ' head';
+      if(result && p.id === result.tailId) cls += ' tail';
+      if(spinnerPlayer && p.id === spinnerPlayer.id && !result) cls += ' spinner-seat';
+      return `<span class="${cls}" style="left:calc(50% + ${x}px);top:calc(50% + ${y}px);">${escapeHtml(p.name)}</span>`;
+    }).join('');
+
+    const bottleAngle = result ? result.angle : 0;
+    const bottleExtraSpin = canSpin ? 0 : 0; // final angle only; spin flourish added at click time
+
+    let statusLine;
+    if(!phase) statusLine = myTurnToSpin ? '🌟 نوبت توئه! بزن رو بطری تا بچرخه' : `نوبت ${spinnerPlayer ? escapeHtml(spinnerPlayer.name) : '...'}`;
+    else if(phase === 'choosing') statusLine = `🍾 سر بطری: <b>${escapeHtml(result.headName)}</b> (پرسنده) ← ته بطری: <b>${escapeHtml(result.tailName)}</b> (پاسخ‌دهنده)`;
+    else statusLine = `${escapeHtml(result.headName)} از ${escapeHtml(result.tailName)} پرسید`;
+
+    let promptBlock = '';
+    if(phase === 'choosing'){
+      if(iAmTail){
+        promptBlock = `
+          <div class="prompt-card" style="text-align:center;">
+            <p class="sub">انتخاب کن:</p>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-primary" id="chooseDare" style="flex:1;">😈 جرأت</button>
+              <button class="btn btn-primary" id="chooseTruth" style="flex:1;">🤔 حقیقت</button>
+            </div>
+          </div>`;
+      }else{
+        promptBlock = `<div class="prompt-card" style="text-align:center;"><p class="sub">منتظر انتخاب ${escapeHtml(result.tailName)}...</p></div>`;
+      }
+    }else if(phase === 'revealed'){
+      const kindLabel = s.chosenType === 'truth' ? 'حقیقت' : 'جرأت';
+      let inner = `<span class="prompt-kind ${s.chosenType}">${kindLabel}</span><p class="prompt-text">${escapeHtml(s.prompt || '')}</p>`;
+      if(s.chosenType === 'truth'){
+        if(s.answerText){
+          inner += `<div class="answer-shown">جواب ${escapeHtml(result.tailName)}: ${escapeHtml(s.answerText)}</div>`;
+        }else if(iAmTail){
+          inner += `<textarea class="answer-box" id="answerInput" placeholder="جوابتو اینجا بنویس..."></textarea>
+                     <button class="btn btn-primary" id="submitAnswer" style="width:100%;margin-top:8px;">ثبت جواب</button>`;
+        }else{
+          inner += `<p class="sub">در انتظار پاسخ ${escapeHtml(result.tailName)}...</p>`;
+        }
+      }else{
+        inner += `<a class="btn btn-primary" style="display:block;text-decoration:none;margin-top:10px;" href="https://rubika.ir/joing/BBDEIIJCB0SJSOFDVZZXNXCCDDFDHRVC" target="_blank" rel="noopener">📸 رفتن به گروه و فرستادن مدرک</a>`;
+        if(s.dareDone === null || s.dareDone === undefined){
+          if(iAmTail){
+            inner += `<div style="display:flex;gap:10px;margin-top:10px;">
+                        <button class="btn btn-primary" id="dareDoneYes" style="flex:1;">✅ انجام دادم</button>
+                        <button class="btn btn-ghost" id="dareDoneNo" style="flex:1;">❌ نتونستم</button>
+                      </div>`;
+          }else{
+            inner += `<p class="sub" style="margin-top:8px;">در انتظار نتیجه...</p>`;
+          }
+        }else{
+          inner += `<p class="sub" style="margin-top:8px;">${s.dareDone ? '✅ انجام داد و مدرک فرستاد' : '❌ این‌بار نتونست انجامش بده'}</p>`;
+        }
+      }
+      promptBlock = `<div class="prompt-card">${inner}</div>`;
+
+      const resolved = (s.chosenType === 'truth' && s.answerText) || (s.chosenType === 'dare' && (s.dareDone === true || s.dareDone === false));
+      const canAdvance = resolved && (isRoomHost || iAmTail);
+      if(canAdvance){
+        promptBlock += `<button class="btn btn-ghost" id="nextRoundBtn" style="width:100%;margin-top:12px;">دور بعد ➡️</button>`;
+      }
+    }
+
+    root.innerHTML = `
+      <div class="game-card">
+        <h3>🍾 بازی جرأت یا حقیقت</h3>
+        <div class="circle-wrap">
+          ${seatsHtml}
+          <div class="bottle-center ${canSpin ? 'can-spin' : ''}" id="bottleEl" style="transform:rotate(${bottleAngle}deg);">
+            <div class="bottle-shape"></div>
+          </div>
+        </div>
+        <p class="sub">${statusLine}</p>
+        ${promptBlock}
+        ${isRoomHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:16px;">پایان بازی</button>' : ''}
+      </div>`;
+
+    if(canSpin){
+      document.getElementById('bottleEl').onclick = async function(){
+        const el = this;
+        el.classList.remove('can-spin');
+        const currentDeg = 0;
+        el.style.transform = `rotate(${currentDeg + 1080 + Math.floor(Math.random()*360)}deg)`;
+        await sendGameAction('spin', { id: me.id });
+        setTimeout(pollGame, 2500);
+      };
+    }
+    const chooseDareBtn = document.getElementById('chooseDare');
+    const chooseTruthBtn = document.getElementById('chooseTruth');
+    if(chooseDareBtn) chooseDareBtn.onclick = async ()=>{ await sendGameAction('choose', { id: me.id, choice: 'dare' }); await pollGame(); };
+    if(chooseTruthBtn) chooseTruthBtn.onclick = async ()=>{ await sendGameAction('choose', { id: me.id, choice: 'truth' }); await pollGame(); };
+    const submitAnswerBtn = document.getElementById('submitAnswer');
+    if(submitAnswerBtn) submitAnswerBtn.onclick = async ()=>{
+      const text = document.getElementById('answerInput').value.trim();
+      if(!text){ showToast('یه چیزی بنویس'); return; }
+      await sendGameAction('answer', { id: me.id, text });
+      await pollGame();
+    };
+    const dareYes = document.getElementById('dareDoneYes');
+    const dareNo = document.getElementById('dareDoneNo');
+    if(dareYes) dareYes.onclick = async ()=>{ await sendGameAction('dareResult', { id: me.id, done: true }); await pollGame(); };
+    if(dareNo) dareNo.onclick = async ()=>{ await sendGameAction('dareResult', { id: me.id, done: false }); await pollGame(); };
+    const nextBtn = document.getElementById('nextRoundBtn');
+    if(nextBtn) nextBtn.onclick = async ()=>{ await sendGameAction('next', { id: me.id }); await pollGame(); };
+    if(isRoomHost){
+      document.getElementById('closeRoomBtn').onclick = async ()=>{
+        await sendGameAction('close', { id: me.id });
+        await pollGame();
+      };
+    }
+    return;
+  }
+}
+
+let lastMembersHash = '';
+
+/* ===================== Background music ===================== */
+const bgMusic = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicToggle');
+bgMusic.volume = 0.45;
+function setMusicBtnState(){
+  musicBtn.textContent = bgMusic.paused ? '🎵' : '🔊';
+  musicBtn.classList.toggle('playing', !bgMusic.paused);
+}
+function tryAutoplay(){
+  bgMusic.play().then(setMusicBtnState).catch(()=>{ /* blocked until a tap happens */ });
+}
+musicBtn.onclick = (e)=>{
+  e.stopPropagation();
+  if(bgMusic.paused) bgMusic.play(); else bgMusic.pause();
+  setMusicBtnState();
+};
+function unlockMusicOnce(){
+  if(bgMusic.paused) tryAutoplay();
+  ['click','touchstart','pointerdown','keydown'].forEach(evt=>{
+    document.removeEventListener(evt, unlockMusicOnce, true);
+  });
+}
+['click','touchstart','pointerdown','keydown'].forEach(evt=>{
+  document.addEventListener(evt, unlockMusicOnce, true);
+});
+tryAutoplay();
+
+(async function init(){
+  await loadMembers();
+  lastMembersHash = JSON.stringify(members);
+  renderList();
+  setInterval(async ()=>{
+    await loadMembers();
+    const h = JSON.stringify(members);
+    if(h !== lastMembersHash){
+      lastMembersHash = h;
+      renderList();
+    }
+  }, REFRESH_MS);
+})();
+</script>
+</body>
+</html>
