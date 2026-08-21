@@ -43,13 +43,14 @@
       linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
     background-size:38px 38px;
-    animation:gridDrift 22s linear infinite;
   }
-  @keyframes gridDrift{ 0%{background-position:0 0;} 100%{background-position:38px 38px;} }
   .site-sticker{
-    position:fixed; font-size:26px; z-index:0; pointer-events:none;
-    opacity:.55; filter:drop-shadow(0 0 8px rgba(255,79,139,.6));
+    position:fixed; font-size:24px; z-index:0; pointer-events:none;
+    opacity:.5;
     animation:float 9s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .site-sticker, .blob{ animation:none !important; }
   }
 
   .blob{
@@ -182,6 +183,14 @@
   }
   .toast.show{opacity:1;}
   footer.foot{text-align:center;margin-top:36px;font-size:12px;color:rgba(255,235,245,.7);opacity:.9;position:relative;z-index:1;}
+  .music-btn{
+    position:fixed; bottom:18px; left:18px; z-index:50;
+    width:46px;height:46px;border-radius:50%;border:none;font-size:19px;cursor:pointer;
+    background:linear-gradient(135deg,var(--rose),#a742ff); color:#fff;
+    box-shadow:0 6px 18px rgba(167,66,255,.4);
+  }
+  .music-btn.playing{ animation:musicPulse 1.6s ease-in-out infinite; }
+  @keyframes musicPulse{ 0%,100%{box-shadow:0 6px 18px rgba(167,66,255,.4);} 50%{box-shadow:0 6px 26px rgba(255,46,136,.55);} }
 
   /* Tabs */
   .tabbar{display:flex;gap:8px;justify-content:center;margin:22px 0 4px;}
@@ -250,13 +259,14 @@
   /* VIP cards */
   .vip-wrap{ position:relative; padding:10px; }
   .vip-glow{
-    position:absolute; inset:2px; border-radius:26px; z-index:0;
-    background:linear-gradient(90deg,#ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
-    background-size:400% 400%;
-    filter:blur(16px) saturate(1.4);
-    opacity:.8;
-    animation:rgbShift 5s linear infinite;
+    position:absolute; inset:-6px; border-radius:26px; z-index:0;
+    background:conic-gradient(from 0deg, #ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
+    filter:blur(14px) saturate(1.3);
+    opacity:.75;
+    animation:rgbSpin 6s linear infinite;
+    will-change:transform;
   }
+  @keyframes rgbSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
   @keyframes rgbShift{ 0%{background-position:0% 50%;} 100%{background-position:400% 50%;} }
 
   .vip-card{
@@ -268,12 +278,6 @@
   }
   .vip-card.vip-boy{ background-image: linear-gradient(160deg,#fbfdff,#e6f2ff), linear-gradient(135deg,#8fc7ff,#c9a227); }
   .vip-card.vip-girl{ background-image: linear-gradient(160deg,#fffafc,#ffe9f3), linear-gradient(135deg,#ffb8d6,#c9a227); }
-  .vip-card::after{
-    content:'';position:absolute;inset:0;border-radius:20px;pointer-events:none;
-    background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);
-    background-size:220% 100%;animation:shimmer 3.2s ease-in-out infinite;
-  }
-  @keyframes shimmer{ 0%{background-position:180% 0;} 100%{background-position:-40% 0;} }
 
   .vip-ribbon{
     position:absolute; top:14px; right:-30px; width:120px; text-align:center;
@@ -339,7 +343,7 @@
   /* Owner card (حسین) — extra glow + sidebar + online dot */
   .owner-wrap{ padding-left:34px; }
   .owner-glow{
-    filter:blur(20px) saturate(1.7); opacity:.95; animation-duration:2.6s;
+    filter:blur(16px) saturate(1.6); opacity:.9; animation-duration:3.4s;
   }
   .owner-card{
     background-image: linear-gradient(160deg,#12101c,#1b1430), linear-gradient(90deg,#ff5f6d,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
@@ -413,6 +417,8 @@
 
 <div class="wrap">
   <div class="designer-tag">طراح: OFF</div>
+  <audio id="bgMusic" src="bg-music.mp3" loop preload="none"></audio>
+  <button id="musicToggle" class="music-btn" title="پخش/توقف موزیک">🎵</button>
   <header class="hero">
     <h1>وضعیت <span>قلب</span> بچه‌های گروه 💌</h1>
     <p>هر کی سینگله، آیدی روبیکاش پایین کارتشه — هر کی تو رابطه‌ست، فقط باهاش گرم بگیر 😌<br>وضعیتت عوض شده؟ برو پایین و آپدیتش کن.</p>
@@ -952,10 +958,17 @@ async function verifyPassword(id, password, newPassword){
 }
 
 let gameState = null;
+let lastGameHash = '';
 
 async function pollGame(){
   const state = await fetchGameState();
-  if(state) { gameState = state; renderGame(); }
+  if(!state) return;
+  const h = JSON.stringify(state);
+  gameState = state;
+  if(h !== lastGameHash){
+    lastGameHash = h;
+    renderGame();
+  }
 }
 
 /* ===================== Game: UI ===================== */
@@ -1222,12 +1235,40 @@ async function renderGame(){
   }
 }
 
+let lastMembersHash = '';
+
+/* ===================== Background music ===================== */
+const bgMusic = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicToggle');
+bgMusic.volume = 0.45;
+function setMusicBtnState(){
+  musicBtn.textContent = bgMusic.paused ? '🎵' : '🔊';
+  musicBtn.classList.toggle('playing', !bgMusic.paused);
+}
+function tryAutoplay(){
+  bgMusic.play().then(setMusicBtnState).catch(()=>{ /* blocked until a tap happens */ });
+}
+musicBtn.onclick = ()=>{
+  if(bgMusic.paused) bgMusic.play(); else bgMusic.pause();
+  setMusicBtnState();
+};
+document.addEventListener('click', function firstTap(){
+  if(bgMusic.paused) tryAutoplay();
+  document.removeEventListener('click', firstTap);
+}, { once:true });
+tryAutoplay();
+
 (async function init(){
   await loadMembers();
+  lastMembersHash = JSON.stringify(members);
   renderList();
   setInterval(async ()=>{
     await loadMembers();
-    renderList();
+    const h = JSON.stringify(members);
+    if(h !== lastMembersHash){
+      lastMembersHash = h;
+      renderList();
+    }
   }, REFRESH_MS);
 })();
 </script>
