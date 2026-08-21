@@ -336,6 +336,62 @@
   }
   .vip-card:active{ transform:scale(.985); }
 
+  /* Owner card (حسین) — extra glow + sidebar + online dot */
+  .owner-wrap{ padding-left:34px; }
+  .owner-glow{
+    filter:blur(20px) saturate(1.7); opacity:.95; animation-duration:2.6s;
+  }
+  .owner-card{
+    background-image: linear-gradient(160deg,#12101c,#1b1430), linear-gradient(90deg,#ff5f6d,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
+    background-size:100% 100%, 300% 100%;
+    animation:rgbShift 4s linear infinite;
+    color:#f0e9ff;
+  }
+  .owner-card::after{ background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.25) 50%,transparent 60%); }
+  .owner-card .badge{ filter:brightness(1.15); }
+  .owner-card .bio, .owner-card .bio.empty{ color:#cdbfe0; }
+  .owner-sidebar{
+    position:absolute; top:14px; bottom:14px; left:-30px; width:22px;
+    display:flex; flex-direction:column; align-items:center; justify-content:space-between; z-index:2;
+  }
+  .owner-dotgrid{
+    width:16px;height:16px;
+    background-image:radial-gradient(rgba(167,139,250,.8) 1.5px, transparent 1.5px);
+    background-size:5px 5px;
+  }
+  .owner-sidebar-text{
+    writing-mode:vertical-rl; font-size:10px; font-weight:800; letter-spacing:2px;
+    color:#a78bfa; text-shadow:0 0 6px rgba(167,139,250,.7);
+  }
+  .owner-bolt{ font-size:16px; filter:drop-shadow(0 0 6px #a78bfa); }
+  .owner-ribbon{
+    position:absolute; top:-12px; right:16px; z-index:2;
+    background:linear-gradient(135deg,#a78bfa,#5b9fe0); color:#fff; font-size:11px; font-weight:800;
+    padding:5px 14px; border-radius:999px; letter-spacing:1px;
+    box-shadow:0 4px 14px rgba(167,139,250,.5);
+  }
+  .owner-crown{ font-size:26px; filter:drop-shadow(0 0 10px rgba(255,209,102,.8)); animation:crownPulse 2s ease-in-out infinite; }
+  @keyframes crownPulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.12);} }
+  .owner-avatar-wrap{ position:relative; display:inline-block; }
+  .owner-avatar{ width:72px;height:72px; border:2.5px solid transparent;
+    background-image:linear-gradient(#12101c,#12101c), linear-gradient(90deg,#a78bfa,#63b3ed,#a78bfa);
+    background-origin:border-box; background-clip:padding-box, border-box;
+    background-size:100% 100%, 300% 100%; animation:rgbShift 3s linear infinite;
+  }
+  .owner-online-dot{
+    position:absolute; bottom:4px; left:2px; width:12px;height:12px; border-radius:50%;
+    background:#3ddc84; border:2px solid #12101c; box-shadow:0 0 8px #3ddc84;
+    animation:dotPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes dotPulse{ 0%,100%{opacity:1;} 50%{opacity:.5;} }
+  .owner-name{ font-size:19px; }
+  .owner-quote{
+    position:relative; font-size:14px; color:#cdbfe0; line-height:1.9; margin:10px 0 14px;
+    background:rgba(167,139,250,.08); border:1px dashed rgba(167,139,250,.35); border-radius:14px; padding:14px 16px 14px 16px;
+  }
+  .owner-quote::before{ content:'"'; position:absolute; top:-6px; right:10px; font-size:34px; color:#a78bfa; opacity:.6; }
+
+
   .vip-avatar-placeholder{
     display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff;
     background:linear-gradient(135deg,#c9a227,#e8c76b);
@@ -426,6 +482,7 @@ function statusLabel(s){
 
 /* VIP members: id -> 'boy' | 'girl' (controls card styling + who can upload an avatar) */
 const VIP_MAP = { 15: 'boy', 4: 'boy', 16: 'girl', 0: 'girl' };
+const OWNER_ID = 15;
 function isVip(id){ return Object.prototype.hasOwnProperty.call(VIP_MAP, id); }
 
 function parseExtra(raw){
@@ -524,9 +581,13 @@ function renderCard(m){
       </div>`;
   }
 
+  const isOwner = m.id === OWNER_ID;
   const avatarBlock = m.avatar
     ? `<img class="vip-avatar" src="${m.avatar}" alt="">`
     : `<div class="vip-avatar vip-avatar-placeholder">${escapeHtml(m.name.slice(0,1))}</div>`;
+  const avatarWrapped = isOwner
+    ? `<div class="owner-avatar-wrap">${avatarBlock.replace('vip-avatar','vip-avatar owner-avatar')}<span class="owner-online-dot"></span></div>`
+    : avatarBlock;
   const stickers = VIP_STICKERS[vipKind];
   const stickerSpans = stickers.map((s,i)=>`<span class="vip-sticker vip-sticker-${i}">${s}</span>`).join('');
 
@@ -540,22 +601,31 @@ function renderCard(m){
     return b ? `<span class="vip-badge-chip">${b.label}</span>` : '';
   }).join('');
   const quoteOrBio = ex.quote && ex.quote.trim()
-    ? `<p class="vip-quote">«${escapeHtml(ex.quote.trim())}»</p>`
+    ? `<p class="vip-quote ${isOwner?'owner-quote':''}">${isOwner?'':'«'}${escapeHtml(ex.quote.trim())}${isOwner?'':'»'}</p>`
     : `<p class="${bioClass}">${escapeHtml(bioText)}</p>`;
   const tagChips = (ex.tags||[]).length
     ? `<div class="vip-tags">${ex.tags.map(t=>`<span class="vip-tag-chip">${escapeHtml(t)}</span>`).join('')}</div>` : '';
   const talentsBlock = ex.talents && ex.talents.trim()
     ? `<div class="vip-talents">🌟 استعدادها: ${escapeHtml(ex.talents.trim())}</div>` : '';
 
+  const ownerExtras = isOwner ? `
+    <span class="owner-sidebar">
+      <span class="owner-dotgrid"></span>
+      <span class="owner-sidebar-text">VIP MEMBER</span>
+      <span class="owner-bolt">⚡</span>
+    </span>
+    <span class="owner-ribbon">👑 OWNER</span>` : '';
+
   return `
-    <div class="vip-wrap">
-      <div class="vip-glow vip-glow-${vipKind}"></div>
+    <div class="vip-wrap ${isOwner?'owner-wrap':''}">
+      <div class="vip-glow vip-glow-${vipKind} ${isOwner?'owner-glow':''}"></div>
       ${stickerSpans}
-      <div class="card vip-card vip-${vipKind}">
-        <span class="vip-ribbon">VIP</span>
-        <span class="vip-crown">👑</span>
-        ${avatarBlock}
-        <p class="name vip-name">${escapeHtml(m.name)} ${ageBadge}</p>
+      <div class="card vip-card vip-${vipKind} ${isOwner?'owner-card':''}">
+        ${ownerExtras}
+        ${!isOwner ? '<span class="vip-ribbon">VIP</span>' : ''}
+        <span class="vip-crown ${isOwner?'owner-crown':''}">👑</span>
+        ${avatarWrapped}
+        <p class="name vip-name ${isOwner?'owner-name':''}">${escapeHtml(m.name)} ${ageBadge}</p>
         ${badgeChips ? `<div class="vip-badges">${badgeChips}</div>` : ''}
         <span class="badge ${m.status}">${statusLabel(m.status)}</span>
         ${quoteOrBio}
