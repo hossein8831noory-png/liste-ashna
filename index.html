@@ -54,7 +54,7 @@
   }
 
   .blob{
-    position:fixed; border-radius:50%; filter:blur(60px); opacity:.5; z-index:0; pointer-events:none;
+    position:fixed; border-radius:50%; filter:blur(30px); opacity:.4; z-index:0; pointer-events:none;
     animation:float 14s ease-in-out infinite;
   }
   .blob1{width:280px;height:280px;background:#f6b8cd;top:-60px;left:-60px;}
@@ -192,92 +192,22 @@
   .music-btn.playing{ animation:musicPulse 1.6s ease-in-out infinite; }
   @keyframes musicPulse{ 0%,100%{box-shadow:0 6px 18px rgba(167,66,255,.4);} 50%{box-shadow:0 6px 26px rgba(255,46,136,.55);} }
 
-  /* Tabs */
-  .tabbar{display:flex;gap:8px;justify-content:center;margin:22px 0 4px;}
-  .tab-btn{
-    border:none;background:rgba(255,255,255,.55);color:var(--plum-soft);
-    padding:9px 18px;border-radius:999px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
-  }
-  .tab-btn.active{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;}
-
-  /* Game */
-  .game-card{
-    background:var(--card);border-radius:22px;padding:22px 18px;margin-top:18px;
-    box-shadow:0 8px 24px rgba(139,80,105,.10);text-align:center;
-  }
-  .game-card h3{margin:0 0 10px;font-size:18px;color:var(--plum);}
-  .game-card p.sub{font-size:13.5px;color:var(--plum-soft);margin:0 0 16px;line-height:1.8;}
-  .player-chip{
-    display:inline-flex;align-items:center;gap:6px;background:#fdeef1;color:var(--rose);
-    padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;margin:4px;
-  }
-  .player-chip.turn{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;}
-
-  .circle-wrap{
-    width:280px;height:280px;margin:24px auto;position:relative;
-    border-radius:50%;background:radial-gradient(circle,#fff7f2,#fdeef1);
-    box-shadow:inset 0 0 0 2px rgba(216,116,140,.15);
-  }
-  .seat{
-    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    background:#fff;border:1.5px solid rgba(139,100,120,.2);color:var(--plum);
-    font-size:11.5px;font-weight:700;padding:5px 9px;border-radius:999px;white-space:nowrap;
-    box-shadow:0 3px 8px rgba(139,80,105,.12);
-  }
-  .seat.head{background:linear-gradient(135deg,#89c9ff,#5b9fe0);color:#fff;border-color:transparent;}
-  .seat.tail{background:linear-gradient(135deg,var(--rose),#d9748c);color:#fff;border-color:transparent;}
-  .seat.spinner-seat{box-shadow:0 0 0 3px var(--gold);}
-  .bottle-center{
-    position:absolute;top:50%;left:50%;width:14px;height:74px;margin:-37px 0 0 -7px;
-    transform-origin:50% 50%;
-    transition:transform 2.4s cubic-bezier(.15,.7,.25,1.02);
-    cursor:default;
-  }
-  .bottle-center.can-spin{cursor:pointer;}
-  .bottle-shape{
-    width:100%;height:100%;border-radius:7px;
-    background:linear-gradient(180deg,#4a7a4a 0%,#5f9a5f 45%,#2f5030 100%);
-    position:relative;box-shadow:0 3px 8px rgba(0,0,0,.25);
-  }
-  .bottle-shape::before{
-    content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);
-    width:6px;height:14px;background:#2f5030;border-radius:3px 3px 0 0;
-  }
-  .prompt-card{
-    margin-top:18px;background:#fff;border-radius:18px;padding:18px;text-align:right;
-    box-shadow:0 8px 24px rgba(139,80,105,.12);
-  }
-  .prompt-kind{font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;display:inline-block;margin-bottom:8px;}
-  .prompt-kind.truth{background:#e6f2ff;color:#3d7ab5;}
-  .prompt-kind.dare{background:#fdeef1;color:var(--rose);}
-  .prompt-text{font-size:15px;line-height:2;color:var(--plum);font-weight:600;}
-  .answer-box{width:100%;min-height:70px;margin-top:10px;padding:10px;border-radius:12px;border:1px solid rgba(139,100,120,.25);font-family:inherit;font-size:14px;}
-  .answer-shown{margin-top:10px;background:#f7efdd;padding:10px 12px;border-radius:12px;font-size:14px;line-height:1.9;}
-  .name-select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(139,100,120,.25);font-family:inherit;font-size:14px;background:#fff;color:var(--plum);}
 
 
   /* VIP cards */
   .vip-wrap{ position:relative; padding:10px; }
-  .vip-glow{
-    position:absolute; inset:-6px; border-radius:26px; z-index:0;
-    background:conic-gradient(from 0deg, #ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
-    filter:blur(14px) saturate(1.3);
-    opacity:.75;
-    animation:rgbSpin 6s linear infinite;
-    will-change:transform;
-  }
-  @keyframes rgbSpin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
   @keyframes rgbShift{ 0%{background-position:0% 50%;} 100%{background-position:400% 50%;} }
 
   .vip-card{
     position:relative; z-index:1;
-    border:2px solid transparent;
+    border:3px solid transparent;
     background-clip:padding-box, border-box;
     background-origin:padding-box, border-box;
-    background-image: linear-gradient(160deg,#fffaf9,#fff3e0), linear-gradient(135deg,#f3d17a,#c9a227);
+    background-image: linear-gradient(160deg,#fffaf9,#fff3e0), linear-gradient(90deg,#ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa);
+    box-shadow:0 6px 18px rgba(167,66,255,.18);
   }
-  .vip-card.vip-boy{ background-image: linear-gradient(160deg,#fbfdff,#e6f2ff), linear-gradient(135deg,#8fc7ff,#c9a227); }
-  .vip-card.vip-girl{ background-image: linear-gradient(160deg,#fffafc,#ffe9f3), linear-gradient(135deg,#ffb8d6,#c9a227); }
+  .vip-card.vip-boy{ background-image: linear-gradient(160deg,#fbfdff,#e6f2ff), linear-gradient(90deg,#ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa); }
+  .vip-card.vip-girl{ background-image: linear-gradient(160deg,#fffafc,#ffe9f3), linear-gradient(90deg,#ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa); }
 
   .vip-ribbon{
     position:absolute; top:14px; right:-30px; width:120px; text-align:center;
@@ -310,7 +240,7 @@
     background:linear-gradient(90deg, #ff5f6d,#ffc371,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
     background-size:300% 100%;
     -webkit-background-clip:text; background-clip:text; color:transparent;
-    animation:rgbShift 4s linear infinite;
+    animation:rgbShift 8s steps(24) infinite;
     text-shadow:none;
   }
   .vip-badges{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px; }
@@ -335,20 +265,17 @@
     background-image:linear-gradient(#1a1a2a,#1a1a2a), linear-gradient(90deg,#ff5f6d,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
     background-origin:border-box; background-clip:padding-box, border-box;
     background-size:100% 100%, 300% 100%;
-    animation:rgbShift 4s linear infinite;
+    animation:rgbShift 8s steps(24) infinite;
     box-shadow:0 4px 14px rgba(0,0,0,.25);
   }
   .vip-card:active{ transform:scale(.985); }
 
   /* Owner card (حسین) — extra glow + sidebar + online dot */
   .owner-wrap{ padding-left:34px; }
-  .owner-glow{
-    filter:blur(16px) saturate(1.6); opacity:.9; animation-duration:3.4s;
-  }
   .owner-card{
     background-image: linear-gradient(160deg,#12101c,#1b1430), linear-gradient(90deg,#ff5f6d,#f9f871,#63e6be,#63b3ed,#a78bfa,#ff5f6d);
     background-size:100% 100%, 300% 100%;
-    animation:rgbShift 4s linear infinite;
+    animation:rgbShift 8s steps(24) infinite;
     color:#f0e9ff;
   }
   .owner-card::after{ background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.25) 50%,transparent 60%); }
@@ -380,7 +307,7 @@
   .owner-avatar{ width:72px;height:72px; border:2.5px solid transparent;
     background-image:linear-gradient(#12101c,#12101c), linear-gradient(90deg,#a78bfa,#63b3ed,#a78bfa);
     background-origin:border-box; background-clip:padding-box, border-box;
-    background-size:100% 100%, 300% 100%; animation:rgbShift 3s linear infinite;
+    background-size:100% 100%, 300% 100%; animation:rgbShift 8s steps(24) infinite;
   }
   .owner-online-dot{
     position:absolute; bottom:4px; left:2px; width:12px;height:12px; border-radius:50%;
@@ -429,12 +356,6 @@
     <button class="btn btn-ghost" id="refreshBtn">🔄 بروزرسانی لیست</button>
   </div>
 
-  <div class="tabbar">
-    <button class="tab-btn active" id="tabList">💌 لیست</button>
-    <button class="tab-btn" id="tabGame">🍾 جرأت یا حقیقت</button>
-  </div>
-
-  <div id="listView">
   <div class="status-legend">
     <span><span class="legend-dot" style="background:var(--rose)"></span>سینگل</span>
     <span><span class="legend-dot" style="background:var(--gold)"></span>تو رابطه</span>
@@ -442,16 +363,12 @@
   </div>
 
   <div id="listRoot"></div>
-  </div>
-
-  <div id="gameView" style="display:none;"></div>
 
   <footer class="foot">فقط برای اعضای گروه — لطفاً لینک رو جای دیگه پخش نکن 🤍</footer>
 </div>
 
 <div id="toast" class="toast"></div>
 <div id="modalRoot"></div>
-<div id="whoAmIRoot"></div>
 
 
 <script>
@@ -559,7 +476,7 @@ function rubikaHref(handle){
   return 'https://rubika.ir/' + encodeURIComponent(clean);
 }
 
-const VIP_STICKERS = { boy: ['⚡','🔥','🎮','🖤'], girl: ['✨','🌸','💎','🦋'] };
+const VIP_STICKERS = { boy: ['⚡','🔥'], girl: ['✨','💎'] };
 const BADGE_OPTIONS = [
   {key:'vip', label:'👑 VIP'},
   {key:'og', label:'⚡ OG'},
@@ -624,7 +541,6 @@ function renderCard(m){
 
   return `
     <div class="vip-wrap ${isOwner?'owner-wrap':''}">
-      <div class="vip-glow vip-glow-${vipKind} ${isOwner?'owner-glow':''}"></div>
       ${stickerSpans}
       <div class="card vip-card vip-${vipKind} ${isOwner?'owner-card':''}">
         ${ownerExtras}
@@ -896,345 +812,6 @@ document.getElementById('refreshBtn').onclick = async ()=>{
   showToast('لیست بروز شد');
 };
 
-/* ===================== Tabs ===================== */
-let me = null; // { id, name } — who the current browser session is
-let gamePollTimer = null;
-
-document.getElementById('tabList').onclick = ()=> switchTab('list');
-document.getElementById('tabGame').onclick = ()=> switchTab('game');
-
-function switchTab(tab){
-  const isList = tab === 'list';
-  document.getElementById('listView').style.display = isList ? '' : 'none';
-  document.getElementById('gameView').style.display = isList ? 'none' : '';
-  document.getElementById('tabList').classList.toggle('active', isList);
-  document.getElementById('tabGame').classList.toggle('active', !isList);
-  if(isList){
-    if(gamePollTimer){ clearInterval(gamePollTimer); gamePollTimer = null; }
-  }else{
-    renderGame();
-    if(!gamePollTimer) gamePollTimer = setInterval(pollGame, 4000);
-  }
-}
-
-/* ===================== Game: data layer ===================== */
-async function fetchGameState(){
-  try{
-    const res = await fetch(APPS_SCRIPT_URL + '?type=game');
-    return await res.json();
-  }catch(e){
-    console.error('game fetch failed', e);
-    return null;
-  }
-}
-
-async function sendGameAction(action, payload){
-  try{
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(Object.assign({ scope: 'game', action }, payload || {}))
-    });
-    return await res.json();
-  }catch(e){
-    console.error('game action failed', e);
-    return null;
-  }
-}
-
-async function verifyPassword(id, password, newPassword){
-  try{
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ scope: 'auth', id, password, newPassword: newPassword || undefined })
-    });
-    const data = await res.json();
-    return !!(data && data.ok);
-  }catch(e){
-    console.error('verify failed', e);
-    return false;
-  }
-}
-
-let gameState = null;
-let lastGameHash = '';
-
-async function pollGame(){
-  const state = await fetchGameState();
-  if(!state) return;
-  const h = JSON.stringify(state);
-  gameState = state;
-  if(h !== lastGameHash){
-    lastGameHash = h;
-    renderGame();
-  }
-}
-
-/* ===================== Game: UI ===================== */
-function whoAmIPicker(onPicked){
-  const root = document.getElementById('whoAmIRoot');
-  const options = members.map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
-  root.innerHTML = `
-    <div class="overlay" id="whoOverlay">
-      <div class="modal">
-        <button class="close-x" id="whoClose">✕</button>
-        <h3>اول بگو تو کدومی</h3>
-        <p class="sub">این فقط برای شناسایی توئه تو بازی</p>
-        <div class="field">
-          <select id="whoAmISelect" class="name-select">
-            <option value="">— انتخاب کن —</option>
-            ${options}
-          </select>
-        </div>
-        <div class="field">
-          <label>رمز فعلیت:</label>
-          <input type="password" id="whoAmIPassword" placeholder="رمزی که تو پی‌وی بهت داده شد">
-        </div>
-        <div class="field">
-          <button type="button" class="btn btn-ghost" id="whoTogglePw" style="width:100%;">🔒 می‌خوام رمزمو عوض کنم</button>
-          <div id="whoPwChangeArea" style="display:none;margin-top:10px;">
-            <label>رمز جدید:</label>
-            <input type="password" id="whoNewPassword" placeholder="حداقل ۴ کاراکتر">
-            <label style="margin-top:8px;display:block;">تکرار رمز جدید:</label>
-            <input type="password" id="whoNewPasswordConfirm" placeholder="دوباره بنویسش">
-          </div>
-        </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:8px;" id="whoConfirm">تایید</button>
-      </div>
-    </div>`;
-  document.getElementById('whoTogglePw').onclick = ()=>{
-    const pwArea = document.getElementById('whoPwChangeArea');
-    pwArea.style.display = pwArea.style.display === 'none' ? '' : 'none';
-  };
-  document.getElementById('whoClose').onclick = ()=> root.innerHTML = '';
-  document.getElementById('whoOverlay').onclick = (e)=>{ if(e.target.id==='whoOverlay') root.innerHTML=''; };
-  document.getElementById('whoConfirm').onclick = async ()=>{
-    const id = parseInt(document.getElementById('whoAmISelect').value);
-    const password = document.getElementById('whoAmIPassword').value;
-    const m = members.find(x=>x.id===id);
-    if(!m || !password){ showToast('اسم و رمزتو وارد کن'); return; }
-    let newPassword = null;
-    if(document.getElementById('whoPwChangeArea').style.display !== 'none'){
-      const np = document.getElementById('whoNewPassword').value;
-      const npc = document.getElementById('whoNewPasswordConfirm').value;
-      if(np.length < 4){ showToast('رمز جدید باید حداقل ۴ کاراکتر باشه'); return; }
-      if(np !== npc){ showToast('تکرار رمز جدید درست نیست'); return; }
-      newPassword = np;
-    }
-    const btn = document.getElementById('whoConfirm');
-    btn.disabled = true; btn.textContent = 'در حال بررسی...';
-    const verified = await verifyPassword(id, password, newPassword);
-    btn.disabled = false; btn.textContent = 'تایید';
-    if(!verified){ showToast('رمز اشتباهه ❌'); return; }
-    me = { id: m.id, name: m.name, password: newPassword || password };
-    root.innerHTML = '';
-    if(newPassword) showToast('رمزت عوض شد ✅');
-    onPicked && onPicked();
-  };
-}
-
-async function renderGame(){
-  const root = document.getElementById('gameView');
-  if(!me){
-    root.innerHTML = `
-      <div class="game-card">
-        <h3>🍾 جرأت یا حقیقت</h3>
-        <p class="sub">اول باید بگی تو کدوم عضو گروهی</p>
-        <button class="btn btn-primary" id="pickMeBtn">من رو انتخاب کن</button>
-      </div>`;
-    document.getElementById('pickMeBtn').onclick = ()=> whoAmIPicker(renderGame);
-    return;
-  }
-
-  if(!gameState) gameState = await fetchGameState();
-  const s = gameState || { status: 'closed', players: [] };
-  const canCreateRoom = isVip(me.id);
-
-  if(s.status === 'closed'){
-    root.innerHTML = `
-      <div class="game-card">
-        <h3>🍾 جرأت یا حقیقت</h3>
-        <p class="sub">${canCreateRoom ? 'الان می‌تونی یه روم جدید باز کنی و تو گروه اعلامش کنی.' : 'الان بازی فعالی نیست. صبر کن یکی از اعضای VIP یه روم باز کنه و تو گروه اعلام کنه.'}</p>
-        ${canCreateRoom ? '<button class="btn btn-primary" id="createRoomBtn">شروع روم جدید</button>' : ''}
-      </div>`;
-    if(canCreateRoom){
-      document.getElementById('createRoomBtn').onclick = async ()=>{
-        await sendGameAction('create', { id: me.id, host: me.name, password: me.password });
-        await pollGame();
-        showToast('روم باز شد، حالا تو گروه اعلامش کن 🎉');
-      };
-    }
-    return;
-  }
-
-  const isRoomHost = s.hostId === me.id;
-
-  if(s.status === 'waiting'){
-    const players = s.players || [];
-    const iJoined = players.some(p=>p.id===me.id);
-    root.innerHTML = `
-      <div class="game-card">
-        <h3>🍾 منتظر بازیکن‌ها...</h3>
-        <p class="sub">میزبان: ${escapeHtml(s.host||'')} — حداقل ۴ نفر باید آماده باشن تا بازی شروع بشه</p>
-        <div>${players.length ? players.map(p=>`<span class="player-chip">${escapeHtml(p.name)}</span>`).join('') : '<span class="sub">هنوز کسی نپیوسته</span>'}</div>
-        <p class="sub" style="margin-top:10px;">${players.length} نفر آماده‌ان</p>
-        ${!iJoined ? '<button class="btn btn-primary" id="joinBtn">ملحق شو + آماده‌ام ✅</button>' : '<p class="sub">✅ تو لیست آماده‌هایی</p>'}
-        ${isRoomHost && players.length >= 4 ? '<button class="btn btn-primary" id="startBtn" style="margin-top:10px;">شروع بازی 🍾</button>' : ''}
-        ${isRoomHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:10px;">بستن روم</button>' : ''}
-      </div>`;
-    if(!iJoined){
-      document.getElementById('joinBtn').onclick = async ()=>{
-        await sendGameAction('join', { id: me.id, name: me.name, password: me.password });
-        await pollGame();
-      };
-    }
-    if(isRoomHost && players.length >= 4){
-      document.getElementById('startBtn').onclick = async ()=>{
-        await sendGameAction('start', { id: me.id });
-        await pollGame();
-      };
-    }
-    if(isRoomHost){
-      document.getElementById('closeRoomBtn').onclick = async ()=>{
-        await sendGameAction('close', { id: me.id });
-        await pollGame();
-      };
-    }
-    return;
-  }
-
-  if(s.status === 'playing'){
-    const order = s.order || [];
-    const n = order.length;
-    const spinnerPlayer = order[s.currentIndex] || null;
-    const myTurnToSpin = spinnerPlayer && spinnerPlayer.id === me.id;
-    const result = s.spinResult;
-    const phase = s.roundPhase || null; // null | 'choosing' | 'revealed'
-    const iAmTail = result && result.tailId === me.id;
-    const canSpin = myTurnToSpin && !phase;
-
-    const seatsHtml = order.map((p,i)=>{
-      const angleRad = (i * 360/n) * Math.PI/180;
-      const radius = 112;
-      const x = Math.round(radius*Math.sin(angleRad));
-      const y = Math.round(-radius*Math.cos(angleRad));
-      let cls = 'seat';
-      if(result && p.id === result.headId) cls += ' head';
-      if(result && p.id === result.tailId) cls += ' tail';
-      if(spinnerPlayer && p.id === spinnerPlayer.id && !result) cls += ' spinner-seat';
-      return `<span class="${cls}" style="left:calc(50% + ${x}px);top:calc(50% + ${y}px);">${escapeHtml(p.name)}</span>`;
-    }).join('');
-
-    const bottleAngle = result ? result.angle : 0;
-    const bottleExtraSpin = canSpin ? 0 : 0; // final angle only; spin flourish added at click time
-
-    let statusLine;
-    if(!phase) statusLine = myTurnToSpin ? '🌟 نوبت توئه! بزن رو بطری تا بچرخه' : `نوبت ${spinnerPlayer ? escapeHtml(spinnerPlayer.name) : '...'}`;
-    else if(phase === 'choosing') statusLine = `🍾 سر بطری: <b>${escapeHtml(result.headName)}</b> (پرسنده) ← ته بطری: <b>${escapeHtml(result.tailName)}</b> (پاسخ‌دهنده)`;
-    else statusLine = `${escapeHtml(result.headName)} از ${escapeHtml(result.tailName)} پرسید`;
-
-    let promptBlock = '';
-    if(phase === 'choosing'){
-      if(iAmTail){
-        promptBlock = `
-          <div class="prompt-card" style="text-align:center;">
-            <p class="sub">انتخاب کن:</p>
-            <div style="display:flex;gap:10px;">
-              <button class="btn btn-primary" id="chooseDare" style="flex:1;">😈 جرأت</button>
-              <button class="btn btn-primary" id="chooseTruth" style="flex:1;">🤔 حقیقت</button>
-            </div>
-          </div>`;
-      }else{
-        promptBlock = `<div class="prompt-card" style="text-align:center;"><p class="sub">منتظر انتخاب ${escapeHtml(result.tailName)}...</p></div>`;
-      }
-    }else if(phase === 'revealed'){
-      const kindLabel = s.chosenType === 'truth' ? 'حقیقت' : 'جرأت';
-      let inner = `<span class="prompt-kind ${s.chosenType}">${kindLabel}</span><p class="prompt-text">${escapeHtml(s.prompt || '')}</p>`;
-      if(s.chosenType === 'truth'){
-        if(s.answerText){
-          inner += `<div class="answer-shown">جواب ${escapeHtml(result.tailName)}: ${escapeHtml(s.answerText)}</div>`;
-        }else if(iAmTail){
-          inner += `<textarea class="answer-box" id="answerInput" placeholder="جوابتو اینجا بنویس..."></textarea>
-                     <button class="btn btn-primary" id="submitAnswer" style="width:100%;margin-top:8px;">ثبت جواب</button>`;
-        }else{
-          inner += `<p class="sub">در انتظار پاسخ ${escapeHtml(result.tailName)}...</p>`;
-        }
-      }else{
-        inner += `<a class="btn btn-primary" style="display:block;text-decoration:none;margin-top:10px;" href="https://rubika.ir/joing/BBDEIIJCB0SJSOFDVZZXNXCCDDFDHRVC" target="_blank" rel="noopener">📸 رفتن به گروه و فرستادن مدرک</a>`;
-        if(s.dareDone === null || s.dareDone === undefined){
-          if(iAmTail){
-            inner += `<div style="display:flex;gap:10px;margin-top:10px;">
-                        <button class="btn btn-primary" id="dareDoneYes" style="flex:1;">✅ انجام دادم</button>
-                        <button class="btn btn-ghost" id="dareDoneNo" style="flex:1;">❌ نتونستم</button>
-                      </div>`;
-          }else{
-            inner += `<p class="sub" style="margin-top:8px;">در انتظار نتیجه...</p>`;
-          }
-        }else{
-          inner += `<p class="sub" style="margin-top:8px;">${s.dareDone ? '✅ انجام داد و مدرک فرستاد' : '❌ این‌بار نتونست انجامش بده'}</p>`;
-        }
-      }
-      promptBlock = `<div class="prompt-card">${inner}</div>`;
-
-      const resolved = (s.chosenType === 'truth' && s.answerText) || (s.chosenType === 'dare' && (s.dareDone === true || s.dareDone === false));
-      const canAdvance = resolved && (isRoomHost || iAmTail);
-      if(canAdvance){
-        promptBlock += `<button class="btn btn-ghost" id="nextRoundBtn" style="width:100%;margin-top:12px;">دور بعد ➡️</button>`;
-      }
-    }
-
-    root.innerHTML = `
-      <div class="game-card">
-        <h3>🍾 بازی جرأت یا حقیقت</h3>
-        <div class="circle-wrap">
-          ${seatsHtml}
-          <div class="bottle-center ${canSpin ? 'can-spin' : ''}" id="bottleEl" style="transform:rotate(${bottleAngle}deg);">
-            <div class="bottle-shape"></div>
-          </div>
-        </div>
-        <p class="sub">${statusLine}</p>
-        ${promptBlock}
-        ${isRoomHost ? '<button class="btn btn-ghost" id="closeRoomBtn" style="margin-top:16px;">پایان بازی</button>' : ''}
-      </div>`;
-
-    if(canSpin){
-      document.getElementById('bottleEl').onclick = async function(){
-        const el = this;
-        el.classList.remove('can-spin');
-        const currentDeg = 0;
-        el.style.transform = `rotate(${currentDeg + 1080 + Math.floor(Math.random()*360)}deg)`;
-        await sendGameAction('spin', { id: me.id });
-        setTimeout(pollGame, 2500);
-      };
-    }
-    const chooseDareBtn = document.getElementById('chooseDare');
-    const chooseTruthBtn = document.getElementById('chooseTruth');
-    if(chooseDareBtn) chooseDareBtn.onclick = async ()=>{ await sendGameAction('choose', { id: me.id, choice: 'dare' }); await pollGame(); };
-    if(chooseTruthBtn) chooseTruthBtn.onclick = async ()=>{ await sendGameAction('choose', { id: me.id, choice: 'truth' }); await pollGame(); };
-    const submitAnswerBtn = document.getElementById('submitAnswer');
-    if(submitAnswerBtn) submitAnswerBtn.onclick = async ()=>{
-      const text = document.getElementById('answerInput').value.trim();
-      if(!text){ showToast('یه چیزی بنویس'); return; }
-      await sendGameAction('answer', { id: me.id, text });
-      await pollGame();
-    };
-    const dareYes = document.getElementById('dareDoneYes');
-    const dareNo = document.getElementById('dareDoneNo');
-    if(dareYes) dareYes.onclick = async ()=>{ await sendGameAction('dareResult', { id: me.id, done: true }); await pollGame(); };
-    if(dareNo) dareNo.onclick = async ()=>{ await sendGameAction('dareResult', { id: me.id, done: false }); await pollGame(); };
-    const nextBtn = document.getElementById('nextRoundBtn');
-    if(nextBtn) nextBtn.onclick = async ()=>{ await sendGameAction('next', { id: me.id }); await pollGame(); };
-    if(isRoomHost){
-      document.getElementById('closeRoomBtn').onclick = async ()=>{
-        await sendGameAction('close', { id: me.id });
-        await pollGame();
-      };
-    }
-    return;
-  }
-}
-
 let lastMembersHash = '';
 
 /* ===================== Background music ===================== */
@@ -1248,14 +825,20 @@ function setMusicBtnState(){
 function tryAutoplay(){
   bgMusic.play().then(setMusicBtnState).catch(()=>{ /* blocked until a tap happens */ });
 }
-musicBtn.onclick = ()=>{
+musicBtn.onclick = (e)=>{
+  e.stopPropagation();
   if(bgMusic.paused) bgMusic.play(); else bgMusic.pause();
   setMusicBtnState();
 };
-document.addEventListener('click', function firstTap(){
+function unlockMusicOnce(){
   if(bgMusic.paused) tryAutoplay();
-  document.removeEventListener('click', firstTap);
-}, { once:true });
+  ['click','touchstart','pointerdown','keydown'].forEach(evt=>{
+    document.removeEventListener(evt, unlockMusicOnce, true);
+  });
+}
+['click','touchstart','pointerdown','keydown'].forEach(evt=>{
+  document.addEventListener(evt, unlockMusicOnce, true);
+});
 tryAutoplay();
 
 (async function init(){
