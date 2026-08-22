@@ -404,7 +404,27 @@ function statusLabel(s){
 }
 
 /* VIP members: id -> 'boy' | 'girl' (controls card styling + who can upload an avatar) */
-const VIP_MAP = { 15: 'boy', 4: 'boy', 16: 'girl', 0: 'girl' };
+const VIP_MAP = {
+  0: 'girl',  // نفس فاطمه
+  1: 'girl',  // نیلماه
+  2: 'boy',   // امین
+  3: 'girl',  // نگار
+  4: 'boy',   // ابول
+  5: 'boy',   // امیر
+  6: 'boy',   // یاشار
+  7: 'girl',  // ریحانه
+  8: 'girl',  // فاطمه
+  9: 'girl',  // هستی
+  10: 'girl', // پرنیا
+  11: 'boy',  // مانی
+  12: 'boy',  // علی
+  13: 'boy',  // اشکان
+  14: 'girl', // سارینا
+  15: 'boy',  // حسین (owner)
+  16: 'girl', // فاطمه
+  17: 'girl', // هانا
+  18: 'girl'  // رونیکا
+};
 const OWNER_ID = 15;
 function isVip(id){ return Object.prototype.hasOwnProperty.call(VIP_MAP, id); }
 
